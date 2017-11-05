@@ -7,5 +7,15 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "James Quigley, Josh Hewlett, Alireza Bahremand, Nathaniel Shantz",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "cookie": "^0.3.1",
+    "express": "^4.16.2",
+    "express-session": "^1.15.6",
+    "http": "0.0.0",
+    "http-status-codes": "^1.3.0",
+    "https": "^1.0.0",
+    "passport": "^0.4.0"
+  }
 }
