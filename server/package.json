@@ -1,0 +1,11 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "Directory containing code for the server and the DB access layer",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "James Quigley, Josh Hewlett, Alireza Bahremand, Nathaniel Shantz",
+  "license": "ISC"
+}
