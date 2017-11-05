@@ -5,7 +5,7 @@ export let DBConfig = {
   dbs: {
     user: 'User',
     presentation: 'Presentation',
-    slide_3d_model: 'Slide_3d_Model',
+    slide_3d_model: 'Slide_Model',
     slide: 'Slide',
     model: '3D_Model'
   }
