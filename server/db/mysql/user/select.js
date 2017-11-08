@@ -1,7 +1,7 @@
 import executeQuery from '../query';
 import {
     DBConfig
-} from "../../config";
+} from "../config";
 
 var mysql = require('mysql');
 var table = DBConfig.dbs.user;
