@@ -4,15 +4,15 @@ import {
 } from "../config";
 
 var mysql = require('mysql');
-var table = DBConfig.dbs.user;
+var table = DBConfig.dbs.slide;
 
 export default {
-  byId: async(id, user) => {
-    if (!id || !user.email) {
-      throw "Missing attribute on user";
+  byId: async(id, slide) => {
+    if (!id || !slide.sequence) {
+      throw "Missing attribute on slide";
     }
     var sql = "UPDATE " + table + " SET email = ? WHERE id = ?"
-    var inserts = [user.email, id];
+    var inserts = [slide.sequence, id];
     sql = mysql.format(sql, inserts);
     return executeQuery(sql);
   }
