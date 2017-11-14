@@ -42,3 +42,17 @@ function download(path) {
         });
     })
 }
+
+function deleteObject(path) {
+    return new Promise((resolve, reject) => {
+        s3.deleteObject({
+            Bucket: DBConfig.s3.bucket,
+            Key: path
+        }, (err, data) => {
+            if (err) {
+                reject(err);
+            }
+            resolve(data);
+        });
+    })
+}
