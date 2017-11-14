@@ -3,12 +3,12 @@ import fs from 'fs';
 import path from 'path';
 import DBConfig from '../config';
 
+// AWS S3 configuration
 AWS.config.update({
     accessKeyId: DBConfig.s3.accessKeyId,
     secretAccessKey: DBConfig.s3.secretAccessKey,
     region: DBConfig.s3.region
 });
-
 let s3 = new AWS.S3();
 let myBucket = DBConfig.s3.bucket;
 let myKey = DBConfig.s3.key;
