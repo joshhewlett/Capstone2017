@@ -10,6 +10,7 @@
   "author": "James Quigley, Josh Hewlett, Alireza Bahremand, Nathaniel Shantz",
   "license": "ISC",
   "dependencies": {
+    "aws-sdk": "^2.149.0",
     "body-parser": "^1.18.2",
     "cookie": "^0.3.1",
     "dotenv": "^4.0.0",
