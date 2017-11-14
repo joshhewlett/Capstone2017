@@ -15,7 +15,7 @@ export default {
     accessKeyId: 'AKIAJZQZ2ZAXPHXPQAYQ',
     secretAccessKey: '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',
     region: 'us-east-2',
-    bucket: 'capstone-team3',
+    bucket: 'capstone-team3/models',
     key: 'ea617e859e882e8e3def99ce87656473cd3f2e841ff8d2c4515d3a08be11c7f2'
   },
   mongo: {
