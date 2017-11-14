@@ -1,24 +1,30 @@
+import {
+    DBConfig
+} from '../config';
+
 let AWS = require('aws-sdk'),
   fs = require('fs'),
   path = require('path');
 
 
 AWS.config.update({
-  accessKeyId: "AKIAJZQZ2ZAXPHXPQAYQ",
-  secretAccessKey: "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",
-  region: 'us-east-2'
+    accessKeyId: DBConfig.s3.accessKeyId,
+    secretAccessKey: DBConfig.s3.secretAccessKey,
+    region: DBConfig.s3.region
 });
 
 let s3 = new AWS.S3();
 
 // Bucket names must be unique across all S3 users
 
-let bucketName = 'capstone-team3';
-let bucketKey = 'ea617e859e882e8e3def99ce87656473cd3f2e841ff8d2c4515d3a08be11c7f2';
-let uploadParams = {
-  Bucket: bucketName,
-  Key: bucketKey,
-  Body: ''
+var myBucket = DBConfig.s3.bucket;
+
+var myKey = DBConfig.s3.key;
+
+var uploadParams = {
+    Bucket: myBucket,
+    Key: myKey,
+    Body: ''
 };
 
 let file = '/home/james/GitHub/Capstone2017/server/db/s3/index.js';

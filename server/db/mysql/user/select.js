@@ -1,10 +1,10 @@
 import executeQuery from '../query';
 import {
     DBConfig
-} from "../config";
+} from "../../config";
 
 var mysql = require('mysql');
-var table = DBConfig.dbs.user;
+var table = DBConfig.mysql.dbs.user;
 
 export default {
     byId: async(id) => {
