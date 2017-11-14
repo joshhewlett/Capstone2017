@@ -1,9 +1,9 @@
 import dbConnection from './helper';
 
 export default async(sql) => {
-  var connection = await dbConnection();
+  let connection = await dbConnection();
   try {
-    var results = await connection.query(sql);
+    let results = await connection.query(sql);
     console.log(results);
   } catch (error) {
     throw error;

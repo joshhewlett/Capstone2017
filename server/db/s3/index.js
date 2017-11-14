@@ -1,7 +1,7 @@
-import DBConfig from '../config';
 import AWS from 'aws-sdk';
 import fs from 'fs';
 import path from 'path';
+import DBConfig from '../config';
 
 
 AWS.config.update({

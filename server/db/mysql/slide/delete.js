@@ -1,16 +1,14 @@
 import executeQuery from '../query';
-import {
-    DBConfig
-} from "../../config";
+import mysql from 'mysql';
+import DBConfig from "../../config";
 
-var mysql = require('mysql');
-var table = DBConfig.mysql.dbs.slide;
+let table = DBConfig.mysql.dbs.slide;
 
 export default {
-    byId: async(id) => {
-        var sql = "DELETE FROM " + table + " WHERE id=?";
-        var inserts = [id];
-        sql = mysql.format(sql, inserts);
-        return executeQuery(sql);
-    }
+  byId: async(id) => {
+    let sql = "DELETE FROM " + table + " WHERE id=?";
+    let inserts = [id];
+    sql = mysql.format(sql, inserts);
+    return executeQuery(sql);
+  }
 };

@@ -1,24 +1,21 @@
-var mysql = require('promise-mysql');
+import mysql from 'promise-mysql';
+import DBConfig from "../../config";
 
-import {
-    DBConfig
-} from "../config";
-
-var connection = null;
+let connection = null;
 
 async function Connect() {
-    var connection = await mysql.createConnection({
-        host: DBConfig.mysql.host,
-        user: DBConfig.mysql.username,
-        password: DBConfig.mysql.password,
-        database: "capstone_db"
-    });
-    return connection;
+  let connection = await mysql.createConnection({
+    host: DBConfig.mysql.host,
+    user: DBConfig.mysql.username,
+    password: DBConfig.mysql.password,
+    database: "capstone_db"
+  });
+  return connection;
 }
 
 export default async() => {
-    if (!connection) {
-        connection = await new Connect();
-    }
-    return connection;
+  if (!connection) {
+    connection = await new Connect();
+  }
+  return connection;
 };
