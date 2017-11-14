@@ -1,3 +1,4 @@
+// Database configuration file
 export default {
   mysql: {
     host: process.env.MYSQL_HOST,

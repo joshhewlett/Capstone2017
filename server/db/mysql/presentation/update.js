@@ -1,3 +1,4 @@
+// Presentation UPDATE
 import executeQuery from '../query';
 import mysql from 'mysql';
 import DBConfig from "../../config";
@@ -5,6 +6,7 @@ import DBConfig from "../../config";
 let table = DBConfig.mysql.dbs.presentation;
 
 export default {
+  // Update Presentation object by ID
   byId: async(id, presentation) => {
     if (!id || !presentation.name || !presentation.description || !presentation.presented || !presentation.user_id) {
       throw "Missing attribute on presentation";

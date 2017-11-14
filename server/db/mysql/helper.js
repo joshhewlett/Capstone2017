@@ -1,3 +1,4 @@
+// Singleton for MySQL Database connection
 import mysql from 'promise-mysql';
 import DBConfig from "../../config";
 

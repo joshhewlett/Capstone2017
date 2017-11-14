@@ -1,3 +1,4 @@
+// Slide CREATE
 import executeQuery from '../query';
 import mysql from 'mysql';
 import DBConfig from "../../config";
@@ -5,6 +6,7 @@ import DBConfig from "../../config";
 let table = DBConfig.mysql.dbs.slide;
 
 export default {
+  // Create a Slide object
   one: async(item) => {
     let sql = "INSERT INTO " + table + " (id, presentation_id, sequence) VALUES(DEFAULT,?,?)";
     let inserts = [item.presentation_id, item.sequence]

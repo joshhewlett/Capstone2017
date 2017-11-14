@@ -1,3 +1,4 @@
+// Executes Query on SQL database
 import dbConnection from './helper';
 
 export default async(sql) => {
