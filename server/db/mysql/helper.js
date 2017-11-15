@@ -1,16 +1,14 @@
-var mysql = require('promise-mysql');
+// Singleton for MySQL Database connection
+import mysql from 'promise-mysql';
+import DBConfig from "../../config";
 
-import {
-  DBConfig
-} from "./config";
-
-var connection = null;
+let connection = null;
 
 async function Connect() {
-  var connection = await mysql.createConnection({
-    host: DBConfig.host,
-    user: DBConfig.username,
-    password: DBConfig.password,
+  let connection = await mysql.createConnection({
+    host: DBConfig.mysql.host,
+    user: DBConfig.mysql.username,
+    password: DBConfig.mysql.password,
     database: "capstone_db"
   });
   return connection;

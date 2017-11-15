@@ -1,3 +1,4 @@
+// SQL Database access definition
 import user from '/user/index';
 import presentation from './presentation/index';
 import slide from '/slide/index';

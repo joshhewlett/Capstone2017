@@ -1,16 +1,16 @@
+// User CREATE
 import executeQuery from '../query';
-import {
-    DBConfig
-} from "../config";
+import mysql from 'mysql';
+import DBConfig from "../../config";
 
-var mysql = require('mysql');
-var table = DBConfig.dbs.user;
+let table = DBConfig.mysql.dbs.user;
 
 export default {
-    one: async(item) => {
-        var sql = "INSERT INTO " + table + " (id,email) VALUES(DEFAULT,?)";
-        var inserts = [item.email]
-        sql = mysql.format(sql, inserts);
-        return executeQuery(sql);
-    }
+  // Create a User object
+  one: async(item) => {
+    let sql = "INSERT INTO " + table + " (id,email) VALUES(DEFAULT,?)";
+    let inserts = [item.email]
+    sql = mysql.format(sql, inserts);
+    return executeQuery(sql);
+  }
 };

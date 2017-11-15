@@ -5,11 +5,14 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "babel-watch ./server.js"
+    "start": "node -r @std/esm ./server.js",
+    "s3test": "node -r @std/esm db/s3/index.js"
   },
   "author": "James Quigley, Josh Hewlett, Alireza Bahremand, Nathaniel Shantz",
   "license": "ISC",
   "dependencies": {
+    "@std/esm": "^0.14.0",
+    "aws-sdk": "^2.149.0",
     "body-parser": "^1.18.2",
     "cookie": "^0.3.1",
     "dotenv": "^4.0.0",
@@ -28,5 +31,8 @@
     "babel-preset-es2016": "^6.24.1",
     "babel-runtime": "^6.26.0",
     "babel-watch": "^2.0.7"
+  },
+  "@std/esm": {
+    "esm": "all"
   }
 }
