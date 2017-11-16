@@ -2,12 +2,12 @@ FROM node:carbon
 
 WORKDIR /usr/src/app
 
-COPY server/package.json .
-COPY server/package-lock.json .
+COPY package.json .
+COPY package-lock.json .
 
 RUN npm install
 
-COPY server .
+COPY . .
 
 EXPOSE 3000
 
