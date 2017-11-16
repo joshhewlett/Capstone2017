@@ -1,0 +1,25 @@
+
+matrix:
+  include:
+
+    - language: nodejs
+      before_install:
+        - sudo apt-get install nodejs
+        - cd ./server/
+        - npm install mocha chai node-8-9
+
+      install:
+        - npm install
+
+      script:
+        - npm test #Need to have the test script defined in npm
+
+    - language: objective-c
+      osx_image: xcode61
+      rvm: 2.1.2
+      before_install:
+        - cd ../Hololens/
+      install:
+        - ./Scripts/install.sh
+      script:
+        - ./Scripts/build.sh
