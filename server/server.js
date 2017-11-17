@@ -9,9 +9,7 @@ if (process.env.NODE_ENV !== 'production') {
  */
 import express from 'express';
 import http from 'http';
-import compression from 'compression';
-import helmet from 'helmet';
-import bodyParser from 'body-parser';
+
 
 
 /**
@@ -24,21 +22,24 @@ const logger = helpers.logging();
 logger.debug("Server logger created");
 
 
-/**
- * Server starts here
- */
 var app = express();
+app.logger = logger;
 
 /**
  * Configure Middleware
  */
-app.use(helmet());
-app.use(compression());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-    extended: false
-}));
+helpers.middleware(app);
 
+
+/**
+ * Setup routing
+ */
+helpers.routing(app);
+
+
+/**
+ * Start HTTP Server
+ */
 var server = http.Server(app);
 var port = process.env.SERVER_PORT;
 server.listen(port, () => {
