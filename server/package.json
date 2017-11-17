@@ -7,6 +7,7 @@
         "test": "echo \"Error: no test specified\" && exit 1",
         "start": "node -r @std/esm ./server.js",
         "dev": "nodemon -r @std/esm ./server.js",
+        "prod": "NODE_ENV=prod node -r @std/esm ./server.js",
         "s3test": "node -r @std/esm db/s3/index.js"
     },
     "author": "James Quigley, Josh Hewlett, Alireza Bahremand, Nathaniel Shantz",
@@ -25,6 +26,7 @@
         "http-status-codes": "^1.3.0",
         "https": "^1.0.0",
         "passport": "^0.4.0",
+        "passport-google-oauth": "^1.0.0",
         "promise-mysql": "^3.1.1",
         "winston": "^2.4.0"
     },

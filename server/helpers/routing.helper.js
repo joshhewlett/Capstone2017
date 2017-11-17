@@ -6,6 +6,6 @@ import config from '../config';
 import controllers from '../controllers';
 
 export default (app) => {
+    app.use(config.routing.auth, new controllers.AuthController(app).router);
     app.logger.debug("Routing Initialized");
-    // app.use(config.routing.path.user, new controllers.Controller(app).router)
 }
