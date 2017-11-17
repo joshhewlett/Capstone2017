@@ -18,8 +18,8 @@ matrix:
       osx_image: xcode61
       rvm: 2.1.2
       before_install:
-        - cd ../Hololens/
+        - cd ../Hololens/ASU_Holodeck
       install:
-        - ./Scripts/install.sh
+        - ./Assets/Scripts/install.sh
       script:
-        - ./Scripts/build.sh
+        - ./Assets/Scripts/build.sh
