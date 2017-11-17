@@ -17,7 +17,11 @@ import bodyParser from 'body-parser';
 /**
  * Project imports
  */
+import helpers from './helpers';
 
+const logger = helpers.logging();
+
+logger.debug("Server logger created");
 
 
 /**
@@ -34,3 +38,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
     extended: false
 }));
+
+var server = http.Server(app);
+var port = process.env.SERVER_PORT;
+server.listen(port, () => {
+    logger.info("Server listening on port ", port);
+});
