@@ -10,8 +10,6 @@ if (process.env.NODE_ENV !== 'production') {
 import express from 'express';
 import http from 'http';
 
-
-
 /**
  * Project imports
  */
