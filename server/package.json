@@ -5,8 +5,8 @@
     "main": "server.js",
     "scripts": {
         "test": "echo \"Error: no test specified\" && exit 1",
-        "start": "node -r @std/esm ./server.js",
-        "dev": "nodemon -r @std/esm ./server.js",
+        "start": "node -r @std/esm -r dotenv/config ./server.js",
+        "dev": "nodemon -r @std/esm -r dotenv/config ./server.js",
         "prod": "NODE_ENV=prod node -r @std/esm ./server.js",
         "s3test": "node -r @std/esm db/s3/index.js"
     },
