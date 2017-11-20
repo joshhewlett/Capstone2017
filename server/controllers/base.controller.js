@@ -11,15 +11,22 @@ export default class {
         this.HttpStatus = HttpStatus;
     }
 
-    async sendResponse(res, data, status = HttpStatus.OK, headers) {
+    async sendResponse(res, data, ...metadata) {
+        let status = 200;
         if (!res || !data) {
             throw "Response and Data required";
         }
-        for (const x of headers) {
-            if (!x.name || !x.data) {
-                throw "Improper header formatting";
+        if (metadata.length > 0) {
+            if (typeof(metadata[0] === "number")) {
+                status = metadata[0];
+                metadata.unshift();
             }
-            res.set(x.name, x.data);
+            for (const x of metadata) {
+                if (!x.name || !x.data) {
+                    throw "Improper header formatting";
+                }
+                res.set(x.name, x.data);
+            }
         }
         res.status(status).send(data);
     }
