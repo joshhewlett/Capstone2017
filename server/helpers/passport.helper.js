@@ -24,12 +24,11 @@ export default (app) => {
         clientSecret: process.env.AUTH_CLIENT_SECRET,
         callbackURL: process.env.AUTH_CALLBACK_URL
     }, (accessToken, refreshToken, profile, done) => {
-        app.db.mysql.user.select.byId(profile.id).then((user) => {
-            console.log(user);
-            if (user) {
-                return done(null, user);
+        app.db.mysql.user.select.byEmail(profile.emails[0].value).then((users) => {
+            if (users.length > 0) {
+                return done(null, users[0]);
             } else {
-                app.db.mysql.user.create({
+                app.db.mysql.user.create.one({
                     email: profile.emails[0].value
                 }).then((data) => {
                     app.logger.debug("New user created", data);
