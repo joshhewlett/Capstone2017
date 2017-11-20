@@ -11,10 +11,9 @@ export default class extends BaseController {
         this.router.get('/google/callback',
             app.passport.authenticate('google', {
                 failureRedirect: '/auth/fail'
-            }, (req, res) => {
+            }), (req, res) => {
                 this.success(req, res);
-            })
-        );
+            });
 
         this.router.get('/fail', (req, res) => {
             this.fail(req, res);
