@@ -1,0 +1,14 @@
+{
+    "name": "Root",
+    "version": "1.0.0",
+    "description": "",
+    "main": "",
+    "scripts": {
+        "debug": "cd server && npm run debug"
+    },
+    "author": "James Quigley, Josh Hewlett, Alireza Bahremand, Nathaniel Shantz",
+    "license": "ISC",
+    "@std/esm": {
+        "esm": "all"
+    }
+}

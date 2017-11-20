@@ -25,6 +25,7 @@ export default (app) => {
         callbackURL: process.env.AUTH_CALLBACK_URL
     }, (accessToken, refreshToken, profile, done) => {
         app.db.mysql.user.select.byId(profile.id).then((user) => {
+            console.log(user);
             if (user) {
                 return done(null, user);
             } else {
