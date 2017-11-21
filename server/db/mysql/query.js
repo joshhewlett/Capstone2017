@@ -6,7 +6,6 @@ export default async(sql) => {
     let results;
     try {
         results = await connection.query(sql);
-        console.log(results);
     } catch (error) {
         throw error;
     }

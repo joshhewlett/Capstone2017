@@ -22,7 +22,7 @@ export default (app) => {
         rolling: true,
         cookie: {
             httpOnly: true,
-            maxAge: process.env.SESSION_MAX_AGE,
+            maxAge: parseInt(process.env.SESSION_MAX_AGE),
             secure: false
         }
     }));
