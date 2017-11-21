@@ -11,6 +11,7 @@ import helpers from './helpers';
 import models from './models';
 import db from './db';
 import config from './config';
+import middleware from './middleware';
 
 const logger = helpers.logging();
 
@@ -24,6 +25,7 @@ app.logger = logger;
 app.models = models;
 app.db = db;
 app.config = config;
+app.middleware = middleware;
 
 /**
  * Configure Passport
