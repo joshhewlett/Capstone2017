@@ -2,12 +2,12 @@
 import dbConnection from './helper';
 
 export default async(sql) => {
-  let connection = await dbConnection();
-  try {
-    let results = await connection.query(sql);
-    console.log(results);
-  } catch (error) {
-    throw error;
-  }
-  return results;
+    let connection = await dbConnection();
+    let results;
+    try {
+        results = await connection.query(sql);
+    } catch (error) {
+        throw error;
+    }
+    return results;
 };

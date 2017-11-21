@@ -1,9 +1,3 @@
-// Loads development environment variables from Capstone2017/server/.env file
-import dotenv from 'dotenv'
-if (process.env.NODE_ENV !== 'production') {
-    dotenv.load();
-}
-
 /**
  * Node module imports
  */
@@ -14,14 +8,28 @@ import http from 'http';
  * Project imports
  */
 import helpers from './helpers';
+import models from './models';
+import db from './db';
+import config from './config';
 
 const logger = helpers.logging();
 
 logger.debug("Server logger created");
 
-
+/**
+ * Initialize App with globals
+ */
 var app = express();
 app.logger = logger;
+app.models = models;
+app.db = db;
+app.config = config;
+
+/**
+ * Configure Passport
+ */
+helpers.passport(app);
+
 
 /**
  * Configure Middleware
