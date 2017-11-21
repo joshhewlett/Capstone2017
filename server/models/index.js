@@ -1,12 +1,16 @@
 /**
  * Imports here
  */
-import users from './user';
+import users from './users';
 import slides from './slides';
+import presentations from './presentations';
+import models from './3d_models';
 
 export default {
     users,
-    slides
+    slides,
+    presentations,
+    models
 };
 
 export let map = (schema, json) => {
