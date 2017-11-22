@@ -13,6 +13,8 @@ echo "Attempting to build $project for Windows"
   -logFile $(pwd)/unity.log \
   -projectPath $(pwd) \
   -buildWindowsPlayer "$(pwd)/Build/windows/$project.exe" \
+  -runTests
+  -testResults $(pwd)/results.xml
   -quit
 
 echo "Attempting to build $project for OS X"
@@ -23,6 +25,8 @@ echo "Attempting to build $project for OS X"
   -logFile $(pwd)/unity.log \
   -projectPath $(pwd) \
   -buildOSXUniversalPlayer "$(pwd)/Build/osx/$project.app" \
+  -runTests
+  -testResults $(pwd)/results.xml
   -quit
 
 echo "Attempting to build $project for Linux"
@@ -33,6 +37,8 @@ echo "Attempting to build $project for Linux"
   -logFile $(pwd)/unity.log \
   -projectPath $(pwd) \
   -buildLinuxUniversalPlayer "$(pwd)/Build/linux/$project.exe" \
+  -runTests
+  -testResults $(pwd)/results.xml
   -quit
 
 echo 'Logs from build'
