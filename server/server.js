@@ -27,6 +27,10 @@ app.db = db;
 app.config = config;
 app.middleware = middleware;
 
+app.get("/", (req, res) => {
+    res.send("Hello, World!");
+});
+
 /**
  * Configure Passport
  */
