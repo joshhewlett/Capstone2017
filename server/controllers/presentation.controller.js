@@ -32,23 +32,131 @@ export default class extends BaseController {
 
   }
 
-  async createPresentation(req, res){
 
-  }
+  async createPresentation(req, res){
+    let user = req.user;
+    let data = req.body;
+
+    // Sanitize input and create presentation object
+    // TODO
+    let presentation = new this.Presentation({
+      user: user.id,
+      name: data.name,
+      description: data.description
+    }).catch((err) => {
+       throw "Error creating presentation object";
+    });
+
+    // TODO
+    await presentation.save().catch((err) => {
+      throw {
+        status: this.HttpStatus.INTERNAL_SERVER_ERROR,
+        message: "Could not create presentation"
+      };
+    })
+
+    this.sendResponse(res, presentation);
+  });
+
 
   async getSlides(req, res){
+    let user = req.user;
+    // TODO
+    let presentation = await Presentation.find(req.params.id).catch((err) => {
+      throw {
+        status: this.HttpStatus.INTERNAL_SERVER_ERROR,
+        message: "Could not retrive presentation"
+      };
+    });
 
+    // User does not have access to slides
+    if(user.id != presentation.user_id){
+      this.sendResponse(res, "You don't have access to that!", this.HttpStatus.UNAUTHORIZED);
+    }
+
+    // Get slide objects
+    // TODO
+    let slides = await Slides.find({presentation_id: req.params.id}).catch((err) => {
+      throw {
+        status: this.HttpStatus.INTERNAL_SERVER_ERROR,
+        message: "Could not retrive slides"
+      };
+    });
+
+    this.sendResponse(res, slides);
   }
 
   async getPresentation(req, res){
+    let user = req.user;
+    // TODO
+    let presentation = await Presentation.find(req.params.id).catch((err) => {
+      throw {
+        status: this.HttpStatus.INTERNAL_SERVER_ERROR,
+        message: "Could not retreive presentation"
+      };
+    });
 
+    // User does not have access to slides
+    if(user.id != presentation.user_id){
+      this.sendResponse(res, "You don't have access to that!", this.HttpStatus.UNAUTHORIZED);
+    }
+
+    this.sendResponse(res, slides);
   }
 
   async updatePresentation(req, res){
+    let user = req.user;
+    let data = req.body;
+    // TODO
+    let presentation = await Presentation.find(req.params.id).catch((err) => {
+      throw {
+        status: this.HttpStatus.INTERNAL_SERVER_ERROR,
+        message: "Could not find presentation"
+      };
+    });
 
+    // User does not have access to slides
+    if(user.id != presentation.user_id){
+      this.sendResponse(res, "You don't have access to that!", this.HttpStatus.UNAUTHORIZED);
+    }
+
+    if(data.name){
+      // TODO: Validate type string
+      presentation.name = data.name;
+    }
+    if(data.description){
+      // TODO: Valideate type string
+      presentation.description = data.description;
+    }
+    // TODO
+    await presentation.save().catch((err) => {
+      throw {
+        status: this.HttpStatus.INTERNAL_SERVER_ERROR,
+        message: "Could not update presentation"
+      };
+    });
+
+    this.sendResponse(res, "Success");
   }
 
   async deletePresentation(req, res){
+    let user = req.user;
+    // TODO
+    let presentation = Presentation.find(req.params.id).catch((err) => {
+      throw {
+        status: this.HttpStatus.INTERNAL_SERVER_ERROR,
+        message: "Could not find presentation"
+      };
+    });
 
+    // User does not have access to slides
+    if(user.id != presentation.user_id){
+      this.sendResponse(res, "You don't have access to that!", this.HttpStatus.UNAUTHORIZED);
+    }
+
+    // TODO
+    await Presentation.delete(presentation.id); // TODO
+
+    this.sendResponse(res, "Success");
   }
 }
