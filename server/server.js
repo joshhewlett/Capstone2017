@@ -1,36 +1,59 @@
-// Loads development environment variables from Capstone2017/server/.env file
-import dotenv from 'dotenv'
-if (process.env.NODE_ENV !== 'production') {
-    dotenv.load();
-}
-
 /**
  * Node module imports
  */
 import express from 'express';
 import http from 'http';
-import compression from 'compression';
-import helmet from 'helmet';
-import bodyParser from 'body-parser';
-
 
 /**
  * Project imports
  */
+import helpers from './helpers';
+import models from './models';
+import db from './db';
+import config from './config';
+import middleware from './middleware';
 
+const logger = helpers.logging();
 
+logger.debug("Server logger created");
 
 /**
- * Server starts here
+ * Initialize App with globals
  */
 var app = express();
+app.logger = logger;
+app.models = models;
+app.db = db;
+app.config = config;
+app.middleware = middleware;
+
+app.get("/", (req, res) => {
+    res.send("Hello, World!");
+});
+
+/**
+ * Configure Passport
+ */
+helpers.passport(app);
+
 
 /**
  * Configure Middleware
  */
-app.use(helmet());
-app.use(compression());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({
-    extended: false
-}));
+helpers.middleware(app);
+
+
+/**
+ * Setup routing
+ */
+helpers.routing(app);
+
+
+/**
+ * Start HTTP Server
+ */
+var server = http.Server(app);
+var port = process.env.SERVER_PORT;
+server.listen(port, () => {
+    logger.info("Server listening on port ", port);
+});

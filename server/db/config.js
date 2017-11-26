@@ -5,11 +5,11 @@ export default {
         username: process.env.MYSQL_USERNAME,
         password: process.env.MYSQL_PASSWORD,
         dbs: {
-            user: 'User',
-            presentation: 'Presentation',
-            slide_3d_model: 'Slide_Model',
-            slide: 'Slide',
-            model: '3D_Model'
+            user: 'Users',
+            presentation: 'Presentations',
+            slide_3d_model: 'slide_3d_models',
+            slide: 'slides',
+            model: '3d_models'
         }
     },
     s3: {
