@@ -11,7 +11,7 @@ public class DynamicObjectMenu : MonoBehaviour, IInputClickHandler, IFocusable {
     [Space(10)]
     public float fadeInTime = 1;            // Want separate values for fade in and fade out to serialize the state of the transition
     public float fadeOutTime = 1;           // via coroutine calls.
-    public Material highlightSelectionMaterial;
+    private Material highlightSelectionMaterial;
     private Material defaultMaterial;
     public int toggleMenuUpDown = 0;
 
@@ -25,6 +25,8 @@ public class DynamicObjectMenu : MonoBehaviour, IInputClickHandler, IFocusable {
      */
     void Start () {
         defaultMaterial = GetComponent<Renderer>().material;
+        // https://answers.unity.com/questions/13356/how-can-i-assign-materials-using-c-code.html
+        highlightSelectionMaterial = Resources.Load("Materials/Outline_Material", typeof(Material)) as Material;
         //unfocusedColor = defaultMaterial.GetColor("_Color");
         menuOptions.SetActive(false);           // Set to false by default because edit menu must be toggled on.
     }
