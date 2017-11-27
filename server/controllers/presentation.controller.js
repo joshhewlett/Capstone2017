@@ -65,7 +65,7 @@ export default class extends BaseController {
     let presentation = await Presentation.find(req.params.id).catch((err) => {
       throw {
         status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-        message: "Could not retrive presentation"
+        message: "Could not retrieve presentation"
       };
     });
 
