@@ -12,7 +12,7 @@ export default (app) => {
     });
 
     passport.deserializeUser((id, cb) => {
-        app.db.mysql.user.select.byId(id).then((data) => {
+        app.models.user.findById(id).then(user => {
             cb(null, data);
         }).catch((err) => {
             cb(err, null);
@@ -24,11 +24,15 @@ export default (app) => {
         clientSecret: process.env.AUTH_CLIENT_SECRET,
         callbackURL: process.env.AUTH_CALLBACK_URL
     }, (accessToken, refreshToken, profile, done) => {
-        app.db.mysql.user.select.byEmail(profile.emails[0].value).then((users) => {
-            if (users.length > 0) {
-                return done(null, users[0]);
+        app.models.user.findOne({
+            where: {
+                email: profile.emails[0].value
+            }
+        }).then((user) => {
+            if (user) {
+                return done(null, user);
             } else {
-                app.db.mysql.user.create.one({
+                app.models.user.create({
                     email: profile.emails[0].value
                 }).then((data) => {
                     app.logger.debug("New user created", data);
