@@ -9,6 +9,11 @@ export default class {
         this.app = app;
         this.router = express.Router();
         this.HttpStatus = HttpStatus;
+        this.User = app.models.user;
+        this.Presentation = app.models.presentation;
+        this.Slide = app.models.slide;
+        this.SlideModel = app.models.slide_model;
+        this.Model = app.models.model;
     }
 
     async sendResponse(res, data, ...metadata) {

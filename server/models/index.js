@@ -1,30 +1,16 @@
 /**
  * Imports here
  */
-import users from './users';
-import slides from './slides';
-import presentations from './presentations';
-import models from './3d_models';
+import user from './user';
+import slide from './slide';
+import presentation from './presentation';
+import model from './3d_model';
+import slide_model from './slide_3d_model';
 
 export default {
-    users,
-    slides,
-    presentations,
-    models
+    user,
+    slide,
+    presentation,
+    model,
+    slide_model
 };
-
-export let map = (schema, json) => {
-    for (const item in schema) {
-        const value = json[item];
-        if (value) {
-            if (typeof(value) !== item.type) {
-                throw "Type mismatch!";
-            }
-        } else {
-            if (!item.canBeNull) {
-                throw "Can't be null";
-            }
-        }
-        this.item = value;
-    }
-}
