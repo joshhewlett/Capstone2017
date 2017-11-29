@@ -11,27 +11,11 @@ public class ScaleToggle : MenuToggle
     {
         // The parent of this menu game object is the menu billboard, and the parent of that is the game object
         // model we want to manipulate.
+        toggleScale = !toggleScale;
         rootModel.GetComponent<ScaleManipulation>().ScaleManipulationEnabled = toggleScale;
         rootModel.GetComponent<MoveManipulation>().MoveManipulationEnabled = false;
         rootModel.GetComponent<RotationManipulation>().RotationManipulationEnabled = false;
         Debug.Log("Drag status:\t" + rootModel.GetComponent<ScaleManipulation>().ScaleManipulationEnabled);
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
-    public override void OnInputUp(InputEventData eventData)
-    {
-        //base.OnInputUp(eventData);
-        toggleScale = !toggleScale;
-    }
-
-    public override void OnFocusEnter()
-    {
-
     }
 
     /**

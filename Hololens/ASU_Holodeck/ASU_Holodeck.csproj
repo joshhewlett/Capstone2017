@@ -627,13 +627,16 @@
     <Compile Include="Assets\HoloToolkit-Examples\UX\Scripts\Widgets\ScaleThemeWidget.cs" />
     <Compile Include="Assets\HoloToolkit-Examples\UX\Scripts\Widgets\TextMeshColorThemeWidget.cs" />
     <Compile Include="Assets\HoloToolkit-Examples\UX\Scripts\Widgets\TextureThemeWidget.cs" />
+    <Compile Include="Assets\Scripts\DynamicMenu.cs" />
     <Compile Include="Assets\Scripts\DynamicObjectMenu.cs" />
+    <Compile Include="Assets\Scripts\DynamicQuickMenu.cs" />
     <Compile Include="Assets\Scripts\HighlightGameObject.cs" />
     <Compile Include="Assets\Scripts\ManipulationModalSelector.cs" />
+    <Compile Include="Assets\Scripts\MenuBar.cs" />
+    <Compile Include="Assets\Scripts\MenuPanel.cs" />
     <Compile Include="Assets\Scripts\MenuToggles.cs" />
     <Compile Include="Assets\Scripts\MoveManipulation.cs" />
     <Compile Include="Assets\Scripts\MoveToggle.cs" />
-    <Compile Include="Assets\Scripts\NegateToggleCancelation.cs" />
     <Compile Include="Assets\Scripts\ObjectGenerator.cs" />
     <Compile Include="Assets\Scripts\RotateToggle.cs" />
     <Compile Include="Assets\Scripts\RotationManipulation.cs" />

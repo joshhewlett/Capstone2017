@@ -13,6 +13,7 @@ public class ToggleManipulationSelection : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+        // Iterate through all buttons in the menu canvas and turn them off at beginning.
         foreach (GameObject menuItem in menuOptions) {
             menuItem.SetActive(false);
         }

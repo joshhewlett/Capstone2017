@@ -9,33 +9,18 @@ public class MoveToggle : MenuToggle {
     public override void OnInputClicked(InputClickedEventData eventData) {
         // The parent of this menu game object is the menu billboard, and the parent of that is the game object
         // model we want to manipulate.
+        toggleMove = !toggleMove;
         rootModel.GetComponent<MoveManipulation>().MoveManipulationEnabled = toggleMove;
         rootModel.GetComponent<RotationManipulation>().RotationManipulationEnabled = false;
         rootModel.GetComponent<ScaleManipulation>().ScaleManipulationEnabled = false;
         Debug.Log("Drag status:\t" + rootModel.GetComponent<MoveManipulation>().MoveManipulationEnabled);
     }
-
-	// Update is called once per frame
-	void Update () {
-
-    }
+    
 
     public void Start() {
         // Rerieve parent of toggle object, which is gameobject of manipulation itself.
         // TODO: Fix null error.
         rootModel = gameObject.transform.parent.transform.parent.transform.parent.gameObject;
-    }
-    
-    public override void OnInputUp(InputEventData eventData) {
-        //base.OnInputUp(eventData);
-        toggleMove = !toggleMove;
-    }
-
-    public virtual void OnInputDown(InputEventData eventData) {
-        // The parent of this menu game object is the menu billboard, and the parent of that is the game object
-        // model we want to manipulate.
-        //rootModel.GetComponent<HandDraggable>().SetDragging(toggleMove);
-        //Debug.Log("Drag status:\t" + rootModel.GetComponent<HandDraggable>().IsDraggingEnabled);
     }
 
     /**

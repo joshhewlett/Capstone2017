@@ -95,7 +95,6 @@ public class ObjectGenerator : MonoBehaviour {
         GameObject object_mainMenuToggle= Instantiate(objectMenuToggle, importedInstance.transform) as GameObject;
         GameObject object_mainMenuTheme = Instantiate(objectMenuTheme, importedInstance.transform) as GameObject;
         GameObject object_mainMenu = Instantiate(objectMainMenu, importedInstance.transform) as GameObject;
-        object_mainMenu.GetComponent<NegateToggleCancelation>().toggleSwitch = object_mainMenuToggle;
         object_mainMenu.GetComponent<ManipulationModalSelector>().hololensGaze = hololensGaze;
         // Assign instantiated menu game object as the menu option of dynamic object menu script.
         importedInstance.GetComponent<DynamicObjectMenu>().menuOptions = object_mainMenuToggle;
