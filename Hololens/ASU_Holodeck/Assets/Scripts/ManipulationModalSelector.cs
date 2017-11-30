@@ -27,19 +27,8 @@ public class ManipulationModalSelector : MonoBehaviour, IInputClickHandler, IInp
         //menuItemSelected = !menuItemSelected;
     }
 
-    // Use this for initialization
-    public virtual void Start () {
-        // By default menu item selection is true, upon pressing menu
-        // item then our state changes.
-        menuItemSelected = true;
-	}
-
-    public virtual void Awake() {
-        menuItemSelected = true;
-    }
-
     // Update is called once per frame
-    public virtual void Update() {
+    public void updateMenu() {
         // Opposite of actual menu item selected because we will toggle buttons off to 
         // toggle manipulation icons on.
         foreach (GameObject menuItem in ManipulationSelectionOptions) {
@@ -49,6 +38,18 @@ public class ManipulationModalSelector : MonoBehaviour, IInputClickHandler, IInp
             menuItem.SetActive(menuItemSelected);
         }
     }
+    // Use this for initialization
+    public virtual void Start () {
+        // By default menu item selection is true, upon pressing menu
+        // item then our state changes.
+        menuItemSelected = true;
+        updateMenu();
+	}
+
+    public virtual void Awake() {
+        menuItemSelected = true;
+    }
+
 
     public void OnInputClicked(InputClickedEventData eventData)
     {
@@ -60,5 +61,7 @@ public class ManipulationModalSelector : MonoBehaviour, IInputClickHandler, IInp
         {
             menuItemSelected = true;
         }
+        updateMenu();
+
     }
 }

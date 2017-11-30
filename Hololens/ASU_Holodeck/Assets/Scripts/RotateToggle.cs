@@ -9,24 +9,11 @@ public class RotateToggle : MenuToggle {
     public override void OnInputClicked(InputClickedEventData eventData) {
         // The parent of this menu game object is the menu billboard, and the parent of that is the game object
         // model we want to manipulate.
+        toggleRotate = !toggleRotate;
         rootModel.GetComponent<RotationManipulation>().RotationManipulationEnabled= toggleRotate;
         rootModel.GetComponent<MoveManipulation>().MoveManipulationEnabled = false;
         rootModel.GetComponent<ScaleManipulation>().ScaleManipulationEnabled = false;
         Debug.Log("Drag status:\t" + rootModel.GetComponent<RotationManipulation>().RotationManipulationEnabled);
-    }
-
-    // Update is called once per frame
-    void Update() {
-
-    }
-
-    public override void OnInputUp(InputEventData eventData) {
-        //base.OnInputUp(eventData);
-        toggleRotate = !toggleRotate;
-    }
-
-    public override void OnFocusEnter() {
-
     }
 
     /**

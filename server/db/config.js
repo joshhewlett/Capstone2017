@@ -4,6 +4,7 @@ export default {
         host: process.env.MYSQL_HOST,
         username: process.env.MYSQL_USERNAME,
         password: process.env.MYSQL_PASSWORD,
+        database: 'capstone_db',
         dbs: {
             user: 'Users',
             presentation: 'Presentations',
