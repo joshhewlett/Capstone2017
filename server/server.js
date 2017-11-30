@@ -28,7 +28,7 @@ app.config = config;
 app.middleware = middleware;
 
 app.get("/", (req, res) => {
-    res.send("Hello, World!");
+    res.send("Hello, Doug!");
 });
 
 /**
