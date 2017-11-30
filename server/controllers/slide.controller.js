@@ -85,45 +85,8 @@ export default class extends BaseController {
 
   async getSlide(req, res){
     // TODO
-    // What are we wanting to accomplish with this one?
-  }
-
-  // TODO This is really just to update the sequence, huh?
-  // If that. Because we will probably update the slide's sequences
-  // through the presentation controller
-  async updateSlide(req, res){
-    let user = req.user;
-    let data = req.body;
-    // TODO
-    let slide = await Slide.find(req.params.id).catch((err) => {
-      throw {
-        status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-        message: "Could not find slide"
-      }
-    });
-
-    let presentation = await Presentation.find(id: slide.presentation_id).catch((err) => {
-      throw {
-        status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-        message: "Could not find presentation"
-      };
-    });
-
-    // User does not have access to slides
-    if(user.id != presentation.user_id){
-      this.sendResponse(res, "You don't have access to that!", this.HttpStatus.UNAUTHORIZED);
-    }
-
-    slide.sequence = data.sequence;
-    // TODO
-    await presentation.save().catch((err) => {
-      throw {
-        status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-        message: "Could not update presentation"
-      };
-    });
-
-    this.sendResponse(res, "Success");
+    // Hella Metaaa
+    
   }
 
   async deleteSlide(req, res){

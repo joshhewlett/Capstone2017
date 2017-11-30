@@ -56,7 +56,7 @@ export default class extends BaseController {
     })
 
     this.sendResponse(res, presentation);
-  });
+  };
 
 
   async getSlides(req, res){

@@ -1,5 +1,6 @@
 /server/node_modules
 /server/.esm-cache
+/server/.eslintrc.json
 
 # =============== #
 # Unity generated #
