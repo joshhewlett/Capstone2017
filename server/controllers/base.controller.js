@@ -8,6 +8,7 @@ export default class {
     constructor(app) {
         this.app = app;
         this.router = express.Router();
+        this.logger = app.logger;
         this.HttpStatus = HttpStatus;
         this.User = app.models.user;
         this.Presentation = app.models.presentation;

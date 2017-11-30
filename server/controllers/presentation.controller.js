@@ -9,6 +9,11 @@ export default class extends BaseController {
       this.createPresentation(req, res);
     });
 
+    // Get all presentations associated with user
+    this.router.get('/', (req, res) => {
+      this.getUsersPresentation(req, res);
+    })
+
     // Returns all the slides belonging to Presentation
     // with the id of :id
     this.router.get('/:id/slides', (req, res) => {
@@ -32,32 +37,45 @@ export default class extends BaseController {
 
   }
 
-
   async createPresentation(req, res){
     let user = req.user;
     let data = req.body;
 
-    // Sanitize input and create presentation object
-    // TODO
-    let presentation = new this.Presentation({
-      user: user.id,
-      name: data.name,
-      description: data.description
-    }).catch((err) => {
-       throw "Error creating presentation object";
-    });
-
-    // TODO
-    await presentation.save().catch((err) => {
+    console.log(user);
+    console.log("DATA: ", data);
+    // Sanitize input
+    // Assume request can only get here if user exists
+    let sanitizedData = {}
+    if(!data.name){
+      // data.name cannot be null
       throw {
-        status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-        message: "Could not create presentation"
-      };
-    })
+        status: this.HttpStatus.BAD_REQUEST,
+        message: "Invalid input"
+      }
+    }else if(typeof data.name === 'String'){
+      sanitizedData.name = data.name;
+    }
+    if(typeof data.description === 'String'){
+      sanitizedData.description = data.description;
+    }
 
+    // Create presentation
+    await this.Presentation.create({
+      user_id: user.id,
+      name: sanitizedData.name,
+      description: sanitizedData.description
+    }).then((presentation) => {
+      this.logger.info("Successfully created presentation")
+      // this.sendResponse(res, presentation);
+    }).catch((err) => {
+      throw "Error creating presentation object";
+    });
     this.sendResponse(res, presentation);
-  };
+  }
 
+  async getUsersPresentation(req, res){
+    res.status(200).send("We in the clear, boys");
+  }
 
   async getSlides(req, res){
     let user = req.user;
