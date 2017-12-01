@@ -1,180 +1,217 @@
 import BaseController from './base.controller';
 
 export default class extends BaseController {
-  constructor(app) {
-    super(app);
+    constructor(app) {
+        super(app);
 
-    // Create a new Presentation object
-    this.router.post('/', (req, res) => {
-      this.createPresentation(req, res);
-    });
+        // Create a new Presentation object
+        this.router.post('/', (req, res) => {
+            this.createPresentation(req, res);
+        });
 
-    // Get all presentations associated with user
-    this.router.get('/', (req, res) => {
-      this.getUsersPresentation(req, res);
-    })
+        // Get all presentations associated with user
+        this.router.get('/', (req, res) => {
+            this.getUsersPresentation(req, res);
+        })
 
-    // Returns all the slides belonging to Presentation
-    // with the id of :id
-    this.router.get('/:id/slides', (req, res) => {
-      this.getSlides(req, res);
-    });
+        // Returns all the slides belonging to Presentation
+        // with the id of :id
+        this.router.get('/:id/slides', (req, res) => {
+            this.getSlides(req, res);
+        });
 
-    // Returns object for Presentation with the id of :id
-    this.router.get('/:id', (req, res) => {
-      this.getPresentation(req, res);
-    });
+        // Returns object for Presentation with the id of :id
+        this.router.get('/:id', (req, res) => {
+            this.getPresentation(req, res);
+        });
 
-    // Updates Presentation with id of :id
-    this.router.put('/:id', (req, res) => {
-      this.updatePresentation(req, res);
-    });
+        // Updates Presentation with id of :id
+        this.router.put('/:id', (req, res) => {
+            this.updatePresentation(req, res);
+        });
 
-    // Deletes Presentation with id of :id
-    this.router.delete('/:id', (req, res) => {
-      this.deletePresentation(req, res);
-    });
+        // Deletes Presentation with id of :id
+        this.router.delete('/:id', this.app.middleware.authenticated, (req, res) => {
+            this.deletePresentation(req, res);
+        });
 
-  }
-
-  async createPresentation(req, res){
-    let user = req.user;
-    let data = req.body;
-
-    console.log(user);
-    console.log("DATA: ", data);
-    // Sanitize input
-    // Assume request can only get here if user exists
-    let sanitizedData = {}
-    if(!data.name){
-      // data.name cannot be null
-      throw {
-        status: this.HttpStatus.BAD_REQUEST,
-        message: "Invalid input"
-      }
-    }else if(typeof data.name === 'String'){
-      sanitizedData.name = data.name;
-    }
-    if(typeof data.description === 'String'){
-      sanitizedData.description = data.description;
     }
 
-    // Create presentation
-    await this.Presentation.create({
-      user_id: user.id,
-      name: sanitizedData.name,
-      description: sanitizedData.description
-    }).then((presentation) => {
-      this.logger.info("Successfully created presentation")
-      // this.sendResponse(res, presentation);
-    }).catch((err) => {
-      throw "Error creating presentation object";
-    });
-    this.sendResponse(res, presentation);
-  }
+    // Create a new presentation
+    async createPresentation(req, res) {
+        let user = req.user;
+        let data = req.body;
 
-  async getUsersPresentation(req, res){
-    res.status(200).send("We in the clear, boys");
-  }
+        console.log(user);
+        console.log("DATA: ", data);
+        // Sanitize input
+        // Assume request can only get here if user exists
+        let sanitizedData = {}
+        if (!data.name || data.name !== 'string') {
+            // data.name cannot be null and must be a string
+            throw {
+                status: this.HttpStatus.BAD_REQUEST,
+                message: "Invalid input"
+            }
+        } else {
+            sanitizedData.name = data.name;
+        }
 
-  async getSlides(req, res){
-    let user = req.user;
-    // TODO
-    let presentation = await Presentation.find(req.params.id).catch((err) => {
-      throw {
-        status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-        message: "Could not retrieve presentation"
-      };
-    });
+        if (data.description && typeof data.description !== 'string') {
+            // data.description must be a string
+            throw {
+                status: this.HttpStatus.BAD_REQUEST,
+                message: "Invalid input"
+            }
+        } else if (data.description) {
+            sanitizedData.description = data.description;
+        }
 
-    // User does not have access to slides
-    if(user.id != presentation.user_id){
-      this.sendResponse(res, "You don't have access to that!", this.HttpStatus.UNAUTHORIZED);
+        // Create presentation
+        let presentation = this.Presentation.create({
+            user_id: user.id,
+            name: sanitizedData.name,
+            description: sanitizedData.description
+        }).catch((err) => {
+            throw {
+                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
+                message: "Error creating presentation object"
+            }
+        });
+
+        this.logger.info("Successfully created presentation")
+        this.sendResponse(res, presentation);
     }
 
-    // Get slide objects
-    // TODO
-    let slides = await Slides.find({presentation_id: req.params.id}).catch((err) => {
-      throw {
-        status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-        message: "Could not retrive slides"
-      };
-    });
+    // Find all presentations associated with user
+    async getUsersPresentation(req, res) {
+        // Assume user exists if they got to this point
+        let user = req.user;
 
-    this.sendResponse(res, slides);
-  }
+        // Search database for presentations
+        let presentations = await this.Presentation.findAll({
+            where: {
+                user_id: user.id
+            }
+        }).catch((err) => {
+            throw "Error finding presentations"
+        });
 
-  async getPresentation(req, res){
-    let user = req.user;
-    // TODO
-    let presentation = await Presentation.find(req.params.id).catch((err) => {
-      throw {
-        status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-        message: "Could not retreive presentation"
-      };
-    });
-
-    // User does not have access to slides
-    if(user.id != presentation.user_id){
-      this.sendResponse(res, "You don't have access to that!", this.HttpStatus.UNAUTHORIZED);
+        this.logger.info("Successfully received presentations");
+        this.sendResponse(res, presentations);
     }
 
-    this.sendResponse(res, slides);
-  }
+    // Retrieve all slides for a given presentation
+    async getSlides(req, res) {
+        let user = req.user;
 
-  async updatePresentation(req, res){
-    let user = req.user;
-    let data = req.body;
-    // TODO
-    let presentation = await Presentation.find(req.params.id).catch((err) => {
-      throw {
-        status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-        message: "Could not find presentation"
-      };
-    });
+        let presentation = await this.Presentation.findById(req.params.id).catch((err) => {
+            throw {
+                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
+                message: "Could not retrieve presentation"
+            };
+        });
 
-    // User does not have access to slides
-    if(user.id != presentation.user_id){
-      this.sendResponse(res, "You don't have access to that!", this.HttpStatus.UNAUTHORIZED);
+        // User does not have access to slides
+        if (user.id != presentation.user_id) {
+            throw {
+                status: this.HttpStatus.UNAUTHORIZED,
+                message: "You are not authorized to perform this action!"
+            }
+        }
+
+        // Get slide objects
+        let slides = await this.Slides.find({
+            where: {
+                presentation_id: req.params.id
+            }
+        }).catch((err) => {
+            throw {
+                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
+                message: "Could not retrive slides"
+            };
+        });
+
+        this.sendResponse(res, slides);
     }
 
-    if(data.name){
-      // TODO: Validate type string
-      presentation.name = data.name;
-    }
-    if(data.description){
-      // TODO: Valideate type string
-      presentation.description = data.description;
-    }
-    // TODO
-    await presentation.save().catch((err) => {
-      throw {
-        status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-        message: "Could not update presentation"
-      };
-    });
+    // Returns a presentation object with the given id
+    async getPresentation(req, res) {
+        let user = req.user;
+        console.log(user);
+        let presentation = await this.Presentation.findById(req.params.id).catch((err) => {
+            throw {
+                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
+                message: "Could not retreive presentation"
+            };
+        });
 
-    this.sendResponse(res, "Success");
-  }
+        // User does not have access to slides
+        if (user.id != presentation.user_id) {
+            throw {
+                status: this.HttpStatus.UNAUTHORIZED,
+                message: "You don't have access to that!"
+            }
+        }
 
-  async deletePresentation(req, res){
-    let user = req.user;
-    // TODO
-    let presentation = Presentation.find(req.params.id).catch((err) => {
-      throw {
-        status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-        message: "Could not find presentation"
-      };
-    });
-
-    // User does not have access to slides
-    if(user.id != presentation.user_id){
-      this.sendResponse(res, "You don't have access to that!", this.HttpStatus.UNAUTHORIZED);
+        this.sendResponse(res, presentation);
     }
 
-    // TODO
-    await Presentation.delete(presentation.id); // TODO
+    // Update a presentation with the given id
+    async updatePresentation(req, res) {
+        let user = req.user;
+        let data = req.body;
 
-    this.sendResponse(res, "Success");
-  }
+        let presentation = await this.Presentation.findById(req.params.id).catch((err) => {
+            throw {
+                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
+                message: "Could not find presentation"
+            };
+        });
+
+        // User does not have access to slides
+        if (user.id != presentation.user_id) {
+            throw {
+                status: this.HttpStatus.UNAUTHORIZED,
+                message: "You don't have access to that!"
+            }
+        }
+
+        if (data.name && typeof data.name === "string") {
+            presentation.name = data.name;
+        }
+        if (data.description && typeof data.description === "string") {
+            presentation.description = data.description;
+        }
+
+        await presentation.save().catch((err) => {
+            throw {
+                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
+                message: "Could not update presentation"
+            };
+        });
+
+        this.sendResponse(res, presentation);
+    }
+
+    // Delete a presentation object with a given id
+    async deletePresentation(req, res) {
+        let user = req.user;
+
+        let presentation = this.Presentation.findById(req.params.id).catch((err) => {
+            throw {
+                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
+                message: "Could not find presentation"
+            };
+        });
+
+        // User does not have access to slides
+        if (user.id != presentation.user_id) {
+            this.sendResponse(res, "You don't have access to that!", this.HttpStatus.UNAUTHORIZED);
+        }
+
+        await presentation.destroy();
+
+        this.sendResponse(res, "Success");
+    }
 }
