@@ -15,6 +15,7 @@ export default class {
         this.Slide = app.models.slide;
         this.SlideModel = app.models.slide_model;
         this.Model = app.models.model;
+        this.S3 = app.db.s3;
     }
 
     async sendResponse(res, data, ...metadata) {

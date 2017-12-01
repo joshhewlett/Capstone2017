@@ -201,17 +201,20 @@ export default class extends BaseController {
         let presentation = this.Presentation.findById(req.params.id).catch((err) => {
             throw {
                 status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-                message: "Could not find presentation"
+                message: "Error retrieving presentation"
             };
         });
 
         // User does not have access to slides
         if (user.id != presentation.user_id) {
-            this.sendResponse(res, "You don't have access to that!", this.HttpStatus.UNAUTHORIZED);
+            throw {
+                status: this.HttpStatus.UNAUTHORIZED,
+                message: "You are not authorized to perform this action."
+            };
         }
 
         await presentation.destroy();
 
-        this.sendResponse(res, "Success");
+        this.sendResponse(res, "Successfully deleted presentation");
     }
 }
