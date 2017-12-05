@@ -18,5 +18,9 @@ export default sequelize.define('3d_models', {
             model: User,
             key: 'id'
         }
+    },
+    name: {
+        type: Sequelize.STRING,
+        allowNull: false
     }
 });
