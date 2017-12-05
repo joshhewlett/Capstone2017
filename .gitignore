@@ -1,5 +1,6 @@
 /server/node_modules
 /server/.esm-cache
+/server/.eslintrc.json
 
 # =============== #
 # Unity generated #
@@ -32,3 +33,5 @@ obj/
 .Trashes
 ehthumbs.db
 Thumbs.db
+
+\.vscode/

@@ -1,3 +1,6 @@
 export default {
-    auth: '/auth'
+    auth: '/auth',
+    presentation: '/presentation',
+    slide: '/slide',
+    model: '/model'
 }

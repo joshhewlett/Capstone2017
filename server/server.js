@@ -20,7 +20,7 @@ logger.debug("Server logger created");
 /**
  * Initialize App with globals
  */
-var app = express();
+let app = express();
 app.logger = logger;
 app.models = models;
 app.db = db;
@@ -48,7 +48,9 @@ helpers.middleware(app);
  */
 helpers.routing(app);
 
-
+app.use((err, req, res, next) => {
+    res.status(500).send(err);
+})
 /**
  * Start HTTP Server
  */

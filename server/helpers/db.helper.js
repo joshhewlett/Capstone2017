@@ -3,7 +3,7 @@ import Sequelize from 'sequelize';
 
 const mysqlConfig = DBConfig.mysql;
 
-var sequelize = new Sequelize(mysqlConfig.database, mysqlConfig.username, mysqlConfig.password, {
+let sequelize = new Sequelize(mysqlConfig.database, mysqlConfig.username, mysqlConfig.password, {
     host: mysqlConfig.host,
     dialect: 'mysql'
 });
