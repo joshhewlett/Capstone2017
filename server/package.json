@@ -4,12 +4,12 @@
     "description": "Directory containing code for the server and the DB access layer",
     "main": "server.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1",
+        "build-test": "cd test && docker-compose rm -f && docker-compose build --no-cache && cd .. && docker-compose -f ./test/docker-compose.yml up --abort-on-container-exit",
+        "test": "mocha -r @std/esm -r dotenv/config ./test/test-server.js dotenv_config_path=.env_test --exit",
         "start": "node -r @std/esm -r dotenv/config ./server.js",
         "dev": "nodemon -r @std/esm -r dotenv/config --inspect=0.0.0.0:5858 --nolazy ./server.js",
         "debug": "docker-compose up",
-        "prod": "NODE_ENV=prod node -r @std/esm ./server.js",
-        "s3test": "node -r @std/esm db/s3/index.js"
+        "prod": "NODE_ENV=prod node -r @std/esm ./server.js"
     },
     "author": "James Quigley, Josh Hewlett, Alireza Bahremand, Nathaniel Shantz",
     "license": "ISC",
@@ -18,6 +18,7 @@
         "aws-sdk": "^2.149.0",
         "body-parser": "^1.18.2",
         "compression": "^1.7.1",
+        "concurrently": "^3.5.1",
         "cookie": "^0.3.1",
         "dotenv": "^4.0.0",
         "express": "^4.16.2",
@@ -40,6 +41,9 @@
         "babel-preset-es2016": "^6.24.1",
         "babel-runtime": "^6.26.0",
         "babel-watch": "^2.0.7",
+        "chai": "^4.1.2",
+        "chai-http": "^3.0.0",
+        "mocha": "^4.0.1",
         "nodemon": "^1.12.1"
     },
     "@std/esm": {

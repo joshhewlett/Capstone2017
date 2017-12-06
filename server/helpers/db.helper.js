@@ -5,6 +5,7 @@ const mysqlConfig = DBConfig.mysql;
 
 let sequelize = new Sequelize(mysqlConfig.database, mysqlConfig.username, mysqlConfig.password, {
     host: mysqlConfig.host,
+    port: mysqlConfig.port,
     dialect: 'mysql'
 });
 

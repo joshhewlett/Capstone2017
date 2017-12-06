@@ -48,9 +48,13 @@ helpers.middleware(app);
  */
 helpers.routing(app);
 
+app.get('/hi', (req, res) => {
+    res.status(200).send("Hello world!");
+});
+
 app.use((err, req, res, next) => {
     res.status(500).send(err);
-})
+});
 /**
  * Start HTTP Server
  */
@@ -59,3 +63,5 @@ var port = process.env.SERVER_PORT;
 server.listen(port, () => {
     logger.info("Server listening on port ", port);
 });
+
+export default server;
