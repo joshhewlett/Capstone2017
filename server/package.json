@@ -4,7 +4,7 @@
     "description": "Directory containing code for the server and the DB access layer",
     "main": "server.js",
     "scripts": {
-        "build-test": "cd test && docker-compose rm -f && docker-compose build --no-cache && cd .. && docker-compose -f ./test/docker-compose.yml up --abort-on-container-exit",
+        "build-test": "docker-compose rm -f && docker-compose build --no-cache && docker-compose -f ./docker-compose-test.yml up --abort-on-container-exit",
         "test": "mocha -r @std/esm -r dotenv/config ./test/test-server.js dotenv_config_path=.env_test --exit",
         "start": "node -r @std/esm -r dotenv/config ./server.js",
         "dev": "nodemon -r @std/esm -r dotenv/config --inspect=0.0.0.0:5858 --nolazy ./server.js",

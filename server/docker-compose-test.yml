@@ -7,7 +7,7 @@ services:
     environment:
     - MYSQL_ROOT_PASSWORD=password
   test:
-    build: ..
+    build: .
     command: npm run test
     depends_on:
     - db
