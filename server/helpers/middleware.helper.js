@@ -5,7 +5,7 @@ import compression from 'compression';
 import helmet from 'helmet';
 import bodyParser from 'body-parser';
 import session from 'express-session';
-import passport from './passport.helper';
+import passport from 'passport';
 
 export default (app) => {
     app.logger.debug("Middleware Initialized");
@@ -22,11 +22,11 @@ export default (app) => {
         name: "session",
         rolling: true,
         cookie: {
-            httpOnly: true,
+            httpOnly: false,
             maxAge: parseInt(process.env.SESSION_MAX_AGE),
             secure: false
         }
     }));
-    app.use(app.passport.initialize());
-    app.use(app.passport.session());
+    app.use(passport.initialize());
+    app.use(passport.session());
 }

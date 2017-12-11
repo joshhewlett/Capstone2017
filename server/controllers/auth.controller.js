@@ -8,15 +8,25 @@ export default class extends BaseController {
             scope: ['profile', 'email']
         }));
 
+        // this.router.get('/google/callback',
+        //     app.passport.authenticate('google', {
+        //         failureRedirect: '/auth/fail'
+        //     }), (req, res) => {
+
+        //         this.success(req, res);
+        //     });
         this.router.get('/google/callback',
             app.passport.authenticate('google', {
-                failureRedirect: '/auth/fail'
-            }), (req, res) => {
-                this.success(req, res);
-            });
+                failureRedirect: '/auth/fail',
+                successRedirect: '/auth/success'
+            }));
 
         this.router.get('/fail', (req, res) => {
-            this.fail(req, res);
+            this.failLogin(req, res);
+        });
+
+        this.router.get('/success', (req, res) => {
+            this.success(req, res);
         });
 
         this.router.get('/logout', (req, res) => {
@@ -50,7 +60,7 @@ export default class extends BaseController {
      * @param {Object} req 
      * @param {Object} res 
      */
-    async fail(req, res) {
+    async failLogin(req, res) {
         this.sendResponse(res, "Failed to login", this.HttpStatus.UNAUTHORIZED);
     }
 };

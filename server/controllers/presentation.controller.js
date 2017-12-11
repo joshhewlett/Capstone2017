@@ -5,7 +5,7 @@ export default class extends BaseController {
         super(app);
 
         // Create a new Presentation object
-        this.router.post('/', (req, res) => {
+        this.router.post('/', this.app.middleware.authenticated, (req, res) => {
             this.createPresentation(req, res);
         });
 
@@ -47,7 +47,7 @@ export default class extends BaseController {
         // Sanitize input
         // Assume request can only get here if user exists
         let sanitizedData = {}
-        if (!data.name || data.name !== 'string') {
+        if (!data.name || typeof(data.name) !== 'string') {
             // data.name cannot be null and must be a string
             throw {
                 status: this.HttpStatus.BAD_REQUEST,
@@ -68,19 +68,20 @@ export default class extends BaseController {
         }
 
         // Create presentation
-        let presentation = this.Presentation.create({
+        this.Presentation.create({
             user_id: user.id,
             name: sanitizedData.name,
             description: sanitizedData.description
+        }).then(result => {
+            console.log("Created presentation", result);
+            this.logger.info("Successfully created presentation")
+            this.sendResponse(res, result);
         }).catch((err) => {
             throw {
                 status: this.HttpStatus.INTERNAL_SERVER_ERROR,
                 message: "Error creating presentation object"
             }
         });
-
-        this.logger.info("Successfully created presentation")
-        this.sendResponse(res, presentation);
     }
 
     // Find all presentations associated with user

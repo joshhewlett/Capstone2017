@@ -26,7 +26,7 @@ export default class {
         if (metadata.length > 0) {
             if (typeof(metadata[0] === "number")) {
                 status = metadata[0];
-                metadata.unshift();
+                metadata.shift();
             }
             for (const x of metadata) {
                 if (!x.name || !x.data) {

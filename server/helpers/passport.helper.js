@@ -5,15 +5,15 @@ const GoogleStrategy = GooglePassport.OAuth2Strategy;
 
 export default (app) => {
 
-    app.passport = passport;
-
     passport.serializeUser((user, cb) => {
+        console.log("SERIALIZE");
         cb(null, user.id);
     });
 
     passport.deserializeUser((id, cb) => {
+        console.log("DESERIALIZE");
         app.models.user.findById(id).then(user => {
-            cb(null, data);
+            cb(null, user);
         }).catch((err) => {
             cb(err, null);
         });
@@ -47,7 +47,4 @@ export default (app) => {
             done(err);
         });
     }));
-
-    app.use(passport.initialize());
-    app.use(passport.session());
 };

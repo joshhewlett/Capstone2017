@@ -5,7 +5,7 @@ export default {
         port: process.env.MYSQL_PORT,
         username: process.env.MYSQL_USERNAME,
         password: process.env.MYSQL_PASSWORD,
-        database: 'capstone_db',
+        database: process.env.MYSQL_DB,
         dbs: {
             user: 'Users',
             presentation: 'Presentations',

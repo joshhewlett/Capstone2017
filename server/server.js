@@ -12,6 +12,7 @@ import models from './models';
 import db from './db';
 import config from './config';
 import middleware from './middleware';
+import passport from 'passport';
 
 const logger = helpers.logging();
 
@@ -26,21 +27,22 @@ app.models = models;
 app.db = db;
 app.config = config;
 app.middleware = middleware;
+app.passport = passport;
 
 app.get("/", (req, res) => {
     res.send("Hello, Doug!");
 });
-
-/**
- * Configure Passport
- */
-helpers.passport(app);
 
 
 /**
  * Configure Middleware
  */
 helpers.middleware(app);
+
+/**
+ * Configure Passport
+ */
+helpers.passport(app);
 
 
 /**
