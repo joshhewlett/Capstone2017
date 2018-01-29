@@ -47,7 +47,7 @@ export default class extends BaseController {
         // Sanitize input
         // Assume request can only get here if user exists
         let sanitizedData = {}
-        if (!data.name || data.name !== 'string') {
+        if (!data.name || typeof data.name !== 'string') {
             // data.name cannot be null and must be a string
             throw {
                 status: this.HttpStatus.BAD_REQUEST,
@@ -68,7 +68,7 @@ export default class extends BaseController {
         }
 
         // Create presentation
-        let presentation = this.Presentation.create({
+        let presentation = await this.Presentation.create({
             user_id: user.id,
             name: sanitizedData.name,
             description: sanitizedData.description
@@ -103,7 +103,7 @@ export default class extends BaseController {
 
     // Retrieve all slides for a given presentation
     async getSlides(req, res) {
-        let user = req.user;
+        // let user = req.user;
 
         let presentation = await this.Presentation.findById(req.params.id).catch((err) => {
             throw {
@@ -113,15 +113,15 @@ export default class extends BaseController {
         });
 
         // User does not have access to slides
-        if (user.id != presentation.user_id) {
-            throw {
-                status: this.HttpStatus.UNAUTHORIZED,
-                message: "You are not authorized to perform this action!"
-            }
-        }
+        // if (user.id != presentation.user_id) {
+        //     throw {
+        //         status: this.HttpStatus.UNAUTHORIZED,
+        //         message: "You are not authorized to perform this action!"
+        //     }
+        // }
 
         // Get slide objects
-        let slides = await this.Slides.find({
+        let slides = await this.Slide.findAll({
             where: {
                 presentation_id: req.params.id
             }
@@ -137,8 +137,8 @@ export default class extends BaseController {
 
     // Returns a presentation object with the given id
     async getPresentation(req, res) {
-        let user = req.user;
-        console.log(user);
+        // let user = req.user;
+        // console.log(user);
         let presentation = await this.Presentation.findById(req.params.id).catch((err) => {
             throw {
                 status: this.HttpStatus.INTERNAL_SERVER_ERROR,
@@ -147,12 +147,12 @@ export default class extends BaseController {
         });
 
         // User does not have access to slides
-        if (user.id != presentation.user_id) {
-            throw {
-                status: this.HttpStatus.UNAUTHORIZED,
-                message: "You don't have access to that!"
-            }
-        }
+        // if (user.id != presentation.user_id) {
+        //     throw {
+        //         status: this.HttpStatus.UNAUTHORIZED,
+        //         message: "You don't have access to that!"
+        //     }
+        // }
 
         this.sendResponse(res, presentation);
     }

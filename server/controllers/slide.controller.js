@@ -61,7 +61,7 @@ export default class extends BaseController {
             }
         }
 
-        // User is not unauthorized. Does not own presentation
+        // User is not unauthorized.Does not own presentation
         if (user.id != presentation.user_id) {
             throw {
                 status: this.HttpStatus.UNAUTHORIZED,
@@ -83,19 +83,12 @@ export default class extends BaseController {
 
         // Create slide
         let slide = await this.Slide.create({
-            presentation_id: data.presentation_id
+            presentation_id: data.presentation_id,
+            sequence: sequenceNumber
         }).catch((err) => {
             throw {
                 status: this.HttpStatus.INTERNAL_SERVER_ERROR,
                 message: "Error creating slide."
-            }
-        });
-
-        // Create slide
-        await slide.save().catch((err) => {
-            throw {
-                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-                message: "Could not create slide"
             }
         });
 
