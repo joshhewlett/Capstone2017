@@ -96,6 +96,10 @@ export default class extends BaseController {
     // Delete a model from db
     async deleteModel(req, res) {
         let user = req.user;
+        if (process.env.FAKE_USER_AUTHENTICATION === "true") {
+            user = {};
+            user.id = parseInt(process.env.FAKE_USER_ID);
+        }
 
         this.logger.debug("Retrieving model from database");
         let model = this.Model.findById(req.params.id).catch(err => {
