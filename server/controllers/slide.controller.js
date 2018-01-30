@@ -35,6 +35,11 @@ export default class extends BaseController {
     // Create a new slide for a given presentation
     async createSlide(req, res) {
         let user = req.user;
+        if (process.env.FAKE_USER_AUTHENTICATION === "true") {
+            user = {};
+            user.id = parseInt(process.env.FAKE_USER_ID);
+        }
+
         let data = req.body;
 
         // Validate input
@@ -138,6 +143,10 @@ export default class extends BaseController {
     // Must have permission
     async deleteSlide(req, res) {
         let user = req.user;
+        if (process.env.FAKE_USER_AUTHENTICATION === "true") {
+            user = {};
+            user.id = parseInt(process.env.FAKE_USER_ID);
+        }
 
         let slide = await this.Slide.find(req.params.id).catch((err) => {
             throw {
