@@ -5,35 +5,35 @@ export default class extends BaseController {
         super(app);
 
         // Create a new Slide object
-        this.router.post('/', (req, res) => {
-            this.createSlide(req, res);
+        this.router.post('/', (req, res, next) => {
+            this.createSlide(req, res, next);
         });
 
         // Returns all the models belonging to Slide
         // with the id of :id
-        this.router.get('/:id/models', (req, res) => {
-            this.getSlideModels(req, res);
+        this.router.get('/:id/models', (req, res, next) => {
+            this.getSlideModels(req, res, next);
         });
 
         // Returns object for Slide with the id of :id
-        this.router.get('/:id', (req, res) => {
-            this.getSlide(req, res);
+        this.router.get('/:id', (req, res, next) => {
+            this.getSlide(req, res, next);
         });
 
         // Updates Slide with id of :id
-        this.router.put('/:id', (req, res) => {
-            this.updateSlide(req, res);
+        this.router.put('/:id', (req, res, next) => {
+            this.updateSlide(req, res, next);
         });
 
         // Deletes Slide with id of :id
-        this.router.delete('/:id', (req, res) => {
-            this.deleteSlide(req, res);
+        this.router.delete('/:id', (req, res, next) => {
+            this.deleteSlide(req, res, next);
         });
 
     }
 
     // Create a new slide for a given presentation
-    async createSlide(req, res) {
+    async createSlide(req, res, next) {
         let user = req.user;
         if (process.env.FAKE_USER_AUTHENTICATION === "true") {
             user = {};
@@ -44,34 +44,34 @@ export default class extends BaseController {
 
         // Validate input
         if (!data.presentation_id) {
-            throw {
+            next({
                 status: this.HttpStatus.BAD_REQUEST,
                 message: "Slide must be added to a presentation."
-            }
+            });
         }
 
         // Find presentation user is trying to add to
         let presentation = await this.Presentation.findById(data.presentation_id).catch((err) => {
-            throw {
+            next({
                 status: this.HttpStatus.INTERNAL_SERVER_ERROR,
                 message: "Error retrieving presentation."
-            }
+            });
         });
 
         // Presentation does not exist
         if (!presentation) {
-            throw {
+            next({
                 status: this.HttpStatus.NOT_FOUND,
                 message: "Presentation does not exist."
-            }
+            });
         }
 
         // User is not unauthorized.Does not own presentation
         if (user.id != presentation.user_id) {
-            throw {
+            next({
                 status: this.HttpStatus.UNAUTHORIZED,
                 message: "You don't have permission to do that!"
-            }
+            });
         }
 
         // Calculate sequence number for new slide
@@ -80,10 +80,10 @@ export default class extends BaseController {
                 presentation_id: presentation.id
             }
         }).catch((err) => {
-            throw {
+            next({
                 status: this.HttpStatus.INTERNAL_SERVER_ERROR,
                 message: "Error calculating sequence."
-            }
+            });
         });
 
         // Create slide
@@ -91,10 +91,10 @@ export default class extends BaseController {
             presentation_id: data.presentation_id,
             sequence: sequenceNumber
         }).catch((err) => {
-            throw {
+            next({
                 status: this.HttpStatus.INTERNAL_SERVER_ERROR,
                 message: "Error creating slide."
-            }
+            });
         });
 
         this.logger.info("Successfully created slide");
@@ -103,31 +103,31 @@ export default class extends BaseController {
 
     // Get all models for a slide
     // Anyone can access
-    async getSlideModels(req, res) {
+    async getSlideModels(req, res, next) {
 
         // Validate input
         if (!req.params.id) {
-            throw {
+            next({
                 status: this.HttpStatus.BAD_REQUEST,
                 message: "Invalid request."
-            }
+            });
         }
 
         // Get slide_3d_model objects
         // let models = await SlideModel.find({
         //     slide_id: req.params.id
         // }).catch((err) => {
-        //     throw {
+        //     next({
         //         status: this.HttpStatus.INTERNAL_SERVER_ERROR,
         //         message: "Could not retrieve slide's models"
         //     }
         // });
 
         let models = await sequelize.query("SELECT * FROM slide_3d_model JOIN 3d_model ON slide_3d_model.model_id=3d_model.id WHERE slide_3d_model.slide_id=" + req.params.id).catch((err) => {
-            throw {
+            next({
                 status: this.HttpStatus.INTERNAL_SERVER_ERROR,
                 message: "Could not retrieve slide models."
-            }
+            });
         });
 
         this.logger.info("Successfully received slide models");
@@ -135,13 +135,13 @@ export default class extends BaseController {
     }
 
     // Get SlideModels for Slide
-    async getSlide(req, res) {
+    async getSlide(req, res, next) {
         // TODO What is going to be different than the getModels?
     }
 
     // Delete a given slide.
     // Must have permission
-    async deleteSlide(req, res) {
+    async deleteSlide(req, res, next) {
         let user = req.user;
         if (process.env.FAKE_USER_AUTHENTICATION === "true") {
             user = {};
@@ -149,25 +149,25 @@ export default class extends BaseController {
         }
 
         let slide = await this.Slide.find(req.params.id).catch((err) => {
-            throw {
+            next({
                 status: this.HttpStatus.INTERNAL_SERVER_ERROR,
                 message: "Could not retrieve slide."
-            }
+            });
         });
 
         let presentation = this.Presentation.find(slide.presentation_id).catch((err) => {
-            throw {
+            next({
                 status: this.HttpStatus.INTERNAL_SERVER_ERROR,
                 message: "Could not retrieve presentation"
-            }
+            });
         });
 
         // User does not have access to slides
         if (user.id != presentation.user_id) {
-            throw {
+            next({
                 status: this.HttpStatus.UNAUTHORIZED,
                 message: "You are not authorized to perform this action!"
-            }
+            });
         }
 
         await slide.destroy();
