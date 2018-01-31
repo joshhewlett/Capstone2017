@@ -148,7 +148,10 @@ export default class extends BaseController {
             });
         });
 
-        this.sendResponse(res, slides);
+        let responseData = {};
+        responseData.slides = slides;
+
+        this.sendResponse(res, responseData);
     }
 
     // Returns a presentation object with the given id
