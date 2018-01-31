@@ -31,6 +31,7 @@ app.get("/", (req, res) => {
     res.send("Hello, Doug!");
 });
 
+
 /**
  * Configure Passport
  */
@@ -49,6 +50,7 @@ helpers.middleware(app);
 helpers.routing(app);
 
 app.use((err, req, res, next) => {
+    console.log(err);
     res.status(500).send(err);
 })
 /**

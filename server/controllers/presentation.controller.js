@@ -236,7 +236,7 @@ export default class extends BaseController {
             user.id = parseInt(process.env.FAKE_USER_ID);
         }
 
-        let presentation = this.Presentation.findById(req.params.id).catch((err) => {
+        let presentation = await this.Presentation.findById(req.params.id).catch((err) => {
             next({
                 status: this.HttpStatus.INTERNAL_SERVER_ERROR,
                 message: "Error retrieving presentation"
@@ -244,6 +244,7 @@ export default class extends BaseController {
         });
 
         // User does not have access to slides
+        console.log(user + "\n" + presentation);
         if (user.id != presentation.user_id) {
             next({
                 status: this.HttpStatus.UNAUTHORIZED,

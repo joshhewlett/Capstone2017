@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+    <title>Testing index</title>
+</head>
+
+<body>
+
+    <div>
+        <h3>Presentation endpoints</h3>
+
+        <p>
+            Get user's presentations
+            <a href="/presentation/">
+                <button>GET /presentation</button>
+            </a>
+        </p>
+
+        <p>
+            <form method="POST" action='/presentation'>
+                Create a new presentation:
+
+                <input id="createPresentation_name" name="name" type="text" placeholder="name">
+                <input id="createPresentation_desc" name="description" type="text" placeholder="description">
+                <input type="submit" value="POST /presentation">
+            </form>
+        </p>
+
+
+        <p>
+            Get a presentation by id:
+            <input id="getPresentationById_id" type="text" placeholder="id">
+            <button onclick="getPresentationById();">GET /presentation/:id</button>
+        </p>
+
+        <p>
+            Get all slides for a presentation:
+            <input id="getPresentationSlides_id" type="text" placeholder="id">
+            <button onclick="getPresentationSlides();">GET /presentation/:id/slides</button>
+        </p>
+
+        <p>
+            Update a presentation:
+            <input id="updatePresentation_id" type="text" placeholder="id">
+            <input id="updatePresentation_name" type="text" placeholder="name">
+            <input id="updatePresentation_desc" type="text" placeholder="description">
+            <button onclick="updatePresentation();">PUT /presentation/:id</button>
+
+        </p>
+
+        <p>
+            Delete a presentation:
+            <input id="deletePresentation_id" type="text" placeholder="id">
+            <button onclick="deletePresentation();">DELETE /presentation/:id</button>
+        </p>
+
+
+
+
+
+    </div>
+
+    <script>
+    //
+    // ===== PRESENTATION FUNCTIONS =====
+    //
+    function getPresentationById() {
+        window.location = '/presentation/' + document.getElementById("getPresentationById_id").value;
+    }
+
+    function getPresentationSlides() {
+        window.location = '/presentation/' + document.getElementById("getPresentationSlides_id").value + '/slides';
+    }
+
+    function updatePresentation() {
+        let id = document.getElementById("updatePresentation_id").value;
+        let url = '/presentation/' + id;
+        let data = {};
+        data.name = document.getElementById("updatePresentation_name").value;
+        data.description = document.getElementById("updatePresentation_desc").value;
+
+        $.ajax({
+            type: "PUT",
+            url: url,
+            data: data,
+            success: function(data) {
+                let msg = "{\nid: " + data.id + ",\nname: " + data.name + ",\ndescription: " + data.description + "\n}";
+                alert("Data Updated: " + msg);
+            }
+        });
+    }
+
+    function deletePresentation() {
+        let id = document.getElementById("deletePresentation_id").value;
+        let url = '/presentation/' + id;
+        $.ajax({
+            type: "DELETE",
+            url: url,
+            success: function(msg) {
+                alert("Data Deleted: " + msg);
+            }
+        });
+
+    }
+
+    </script>
+
+</body>
+
+</html>
