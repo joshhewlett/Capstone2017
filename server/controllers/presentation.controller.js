@@ -21,8 +21,8 @@ export default class extends BaseController {
         });
 
         // Returns object for Presentation with the id of :id
-        this.router.get('/:id', (req, res) => {
-            this.getPresentation(req, res);
+        this.router.get('/:id', (req, res, next) => {
+            this.getPresentation(req, res, next);
         });
 
         // Updates Presentation with id of :id
@@ -149,7 +149,7 @@ export default class extends BaseController {
     }
 
     // Returns a presentation object with the given id
-    async getPresentation(req, res) {
+    async getPresentation(req, res, next) {
         let user = req.user;
         if (process.env.FAKE_USER_AUTHENTICATION === "true") {
             user = {};
@@ -163,6 +163,18 @@ export default class extends BaseController {
                 message: "Could not retreive presentation"
             };
         });
+
+        // Check if presentaiton is null
+        if (!presentation) {
+            // throw {
+            //     status: this.HttpStatus.NOT_FOUND,
+            //     message: "Presentation not found"
+            // }
+            next({
+                status: this.HttpStatus.NOT_FOUND,
+                message: "Presentation not found"
+            });
+        }
 
         // User does not have access to slides
         if (user.id != presentation.user_id) {
