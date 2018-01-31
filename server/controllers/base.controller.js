@@ -3,6 +3,7 @@
  */
 import express from 'express';
 import HttpStatus from 'http-status-codes';
+import sequelize from '../helpers/db.helper';
 
 export default class {
     constructor(app) {
@@ -10,6 +11,7 @@ export default class {
         this.router = express.Router();
         this.logger = app.logger;
         this.HttpStatus = HttpStatus;
+        this.sequelize = sequelize;
         this.User = app.models.user;
         this.Presentation = app.models.presentation;
         this.Slide = app.models.slide;

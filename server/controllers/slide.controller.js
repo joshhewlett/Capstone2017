@@ -123,39 +123,42 @@ export default class extends BaseController {
         //     }
         // });
 
-        let models = await sequelize.query("SELECT * FROM slide_3d_model JOIN 3d_model ON slide_3d_model.model_id=3d_model.id WHERE slide_3d_model.slide_id=" + req.params.id).catch((err) => {
+        let models = await this.sequelize.query("SELECT * FROM slide_3d_model JOIN 3d_model ON slide_3d_model.model_id=3d_model.id WHERE slide_3d_model.slide_id=" + req.params.id).catch((err) => {
             next({
                 status: this.HttpStatus.INTERNAL_SERVER_ERROR,
                 message: "Could not retrieve slide models."
             });
         });
+        console.log("==========", models);
 
-        this.logger.info("Successfully received slide models");
-        this.sendResponse(req, models);
+        this.logger.info("Successfully retrieved slide models");
+        this.sendResponse(res, "why");
     }
 
     // Get SlideModels for Slide
     async getSlide(req, res, next) {
         // TODO What is going to be different than the getModels?
+        this.sendResponse(res, "Retrieved slide with id of " + req.params.id);
     }
 
     // Delete a given slide.
     // Must have permission
     async deleteSlide(req, res, next) {
+
         let user = req.user;
         if (process.env.FAKE_USER_AUTHENTICATION === "true") {
             user = {};
             user.id = parseInt(process.env.FAKE_USER_ID);
         }
 
-        let slide = await this.Slide.find(req.params.id).catch((err) => {
+        let slide = await this.Slide.findById(req.params.id).catch((err) => {
             next({
                 status: this.HttpStatus.INTERNAL_SERVER_ERROR,
                 message: "Could not retrieve slide."
             });
         });
 
-        let presentation = this.Presentation.find(slide.presentation_id).catch((err) => {
+        let presentation = await this.Presentation.findById(slide.presentation_id).catch((err) => {
             next({
                 status: this.HttpStatus.INTERNAL_SERVER_ERROR,
                 message: "Could not retrieve presentation"
