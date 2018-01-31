@@ -59,12 +59,52 @@
             <input id="deletePresentation_id" type="text" placeholder="id">
             <button onclick="deletePresentation();">DELETE /presentation/:id</button>
         </p>
-
-
-
-
-
     </div>
+    <br>
+    <br>
+
+
+    <!-- SLIDES ENDPOINTS -->
+
+    <div>
+        <h3>Slides endpoints</h3>
+
+        <p>
+            <form method="POST" action='/slide'>
+                Create a new slide:
+
+                <input id="createSlide_name" name="presentation_id" type="text" placeholder="presentation id">
+                <input type="submit" value="POST /slide">
+            </form>
+        </p>
+
+        <p>
+            Get a slide by id:
+            <input id="getSlideById_id" type="text" placeholder="id">
+            <button onclick="getSlideById();">GET /slide/:id</button>
+        </p>
+
+        <p>
+            Get all models belonging to a slide:
+            <input id="getSlideModels_id" type="text" placeholder="id">
+            <button onclick="getSlideModels();">GET /slide/:id/models</button>
+        </p>
+
+        <p>
+            Update a presentation: (Endpoint unavailable)
+            <!-- <input id="updateSlide_id" type="text" placeholder="id">
+            <input id="updateSlide_name" type="text" placeholder="name">
+            <input id="updateSlide_desc" type="text" placeholder="description"> -->
+            <!-- <button onclick="updateSlide();">PUT /slide/:id</button> -->
+        </p>
+
+        <p>
+            Delete a slide:
+            <input id="deleteSlide_id" type="text" placeholder="id">
+            <button onclick="deleteSlide();">DELETE /slide/:id</button>
+        </p>
+    </div>
+
 
     <script>
     //
@@ -107,6 +147,33 @@
             }
         });
 
+    }
+
+
+    //
+    // ===== SLIDE FUNCTIONS =====
+    //
+    function getSlideById() {
+        window.location = '/slide/' + document.getElementById("getSlideById_id").value;
+    }
+
+    function getSlideModels() {
+        console.log('/slide/' + document.getElementById("getSlideModels_id").value + '/models');
+
+        window.location = '/slide/' + document.getElementById("getSlideModels_id").value + '/models';
+
+    }
+
+    function deleteSlide() {
+        let id = document.getElementById("deleteSlide_id").value;
+        let url = '/slide/' + id;
+        $.ajax({
+            type: "DELETE",
+            url: url,
+            success: function(msg) {
+                alert("Data Deleted: " + msg);
+            }
+        });
     }
 
     </script>
