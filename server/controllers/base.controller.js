@@ -16,7 +16,6 @@ export default class {
         this.Presentation = app.models.presentation;
         this.Slide = app.models.slide;
         this.SlideModel = app.models.slide_model;
-        this.Model = app.models.model;
         this.S3 = app.db.s3;
     }
 

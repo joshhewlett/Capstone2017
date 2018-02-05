@@ -21,12 +21,25 @@ export default sequelize.define('slide_3d_models', {
             key: 'id'
         }
     },
-    model_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-            model: Model,
-            key: 'id'
-        }
+    poly_id: {
+        type: Sequelize.STRING,
+        allowNull: false
+    },
+    /**
+     * position: {
+     *  x: 0,
+     *  y: 0,
+     *  z: 0
+     * },
+     * rotation: {
+     *  x: 0,
+     *  y: 0,
+     *  z: 0
+     * },
+     * scale: 1
+     */
+    transform: {
+        type: Sequelize.JSON,
+        allowNull: false
     }
 });

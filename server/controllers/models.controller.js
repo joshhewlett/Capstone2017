@@ -8,23 +8,11 @@ export default class extends BaseController {
 
         // Create a new Model object
         this.router.post('/', (req, res, next) => {
-            this.uploadModel(req, res, next);
+            this.createModel(req, res, next);
         });
 
-        // Returns the name of Model with id of :id
-        this.router.get('/:id/name', (req, res, next) => {
-            this.getModelName(req, res, next);
-        });
-
-        // Returns object for Model with the id of :id
-        this.router.get('/:id', (req, res, next) => {
-            this.getModel(req, res, next);
-        });
-
-        // Returns paginated list of all Models belonging
-        // to User with id of :id
-        this.router.get('/user/:id', (req, res, next) => {
-            this.getModelsByUser(req, res, next);
+        this.router.put('/:id', (req, res, next) => {
+            this.updateModel(req, res, next);
         });
 
         // Deletes Model with id of :id
@@ -33,64 +21,124 @@ export default class extends BaseController {
         });
     }
 
-    async uploadModel(req, res, next) {
-        this.logger.debug("Recieving object from user and sending to S3");
-        await this.S3.upload(request, req.path).error(err => {
+    async createModel(req, res, next) {
+        let user = req.user;
+        if (process.env.FAKE_USER_AUTHENTICATION === "true") {
+            user = {};
+            user.id = parseInt(process.env.FAKE_USER_ID);
+        }
+
+        let data = req.body;
+
+
+        let sanitizedData = {}
+        if (!data.slide_id || typeof data.slide_ !== 'number') {
+            next({
+                status: this.HttpStatus.BAD_REQUEST,
+                message: "Invalid input"
+            });
+        } else {
+            sanitizedData.slide_id = data.slide_id;
+        }
+
+        if (data.presentation_id && typeof data.presentation_id !== 'number') {
+            // data.presentation_id must be a string
+            next({
+                status: this.HttpStatus.BAD_REQUEST,
+                message: "Invalid input"
+            });
+        } else if (data.presentation_id) {
+            sanitizedData.presentation_id = data.presentation_id;
+        }
+
+        if (data.poly_id && typeof data.poly_id !== 'string') {
+            // data.poly_id must be a string
+            next({
+                status: this.HttpStatus.BAD_REQUEST,
+                message: "Invalid input"
+            });
+        } else if (data.poly_id) {
+            sanitizedData.poly_id = data.poly_id;
+        }
+
+        if (data.transform && typeof data.transform !== 'object') {
+            // data.transform must be a string
+            next({
+                status: this.HttpStatus.BAD_REQUEST,
+                message: "Invalid input"
+            });
+        } else if (data.transform) {
+            sanitizedData.transform = data.transform;
+        }
+
+        // Create model
+        let model = await this.SlideModel.create({
+            presentation_id: sanitizedData.presentation_id,
+            slide_id: sanitizedData.slide_id,
+            poly_id: sanitizedData.poly_id,
+            transform: sanitizedData.transform
+        }).catch((err) => {
             next({
                 status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-                message: "Could not upload object to S3"
+                message: "Error creating model object"
             });
         });
 
-        this.logger.info("Successfully uploaded object");
-        this.sendResponse(res, "Successfully uploaded object");
+        this.logger.info("Successfully created model")
+        this.sendResponse(res, model);
     }
 
-    async getModelName(req, res, next) {
-        // Retrieve model from database
-        this.logger.debug("Retrieving model from database");
-        let model = this.Model.findById(req.params.id).catch(err => {
+    async updateModel(req, res, next) {
+        let user = req.user;
+        if (process.env.FAKE_USER_AUTHENTICATION === "true") {
+            user = {};
+            user.id = parseInt(process.env.FAKE_USER_ID);
+        }
+
+        let data = req.body;
+
+        let model = await this.SlideModel.findById(req.params.id).catch(err => {
             next({
                 status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-                message: "Could not retrieve model"
+                message: "Could not find model"
             });
         });
 
-        this.logger.info("Successfully retrieved model name");
-        this.sendResponse(res, model.name);
-    }
-
-    // Returns an object for Model with id of :id
-    async getModel(req, res, next) {
-        // Retrieve model from database
-        this.logger.debug("Retrieving model from database");
-        let model = this.Model.findById(req.params.id).catch(err => {
+        let presentation = await this.Presentation.findById(model.presentation_id).catch(err => {
             next({
                 status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-                message: "Could not retrieve model"
+                message: "Could not find presentation"
             });
         });
 
-        // Retrieve model from S3 storage
-        this.logger.debug("Retrieving model from S3 storage");
-        let modelObject = await this.S3.download('example.txt').catch(err => {
+        // User does not have access to slides
+        if (user.id != presentation.user_id) {
+            next({
+                status: this.HttpStatus.UNAUTHORIZED,
+                message: "You don't have access to that!"
+            })
+        }
+
+        if (data.slide_id && typeof data.slide_id === "number") {
+            model.slide_id = data.slide_id;
+        }
+        
+        if (data.poly_id && typeof data.poly_id === "string") {
+            model.poly_id = data.poly_id;
+        }
+
+        if (data.transform && typeof data.transform === "string") {
+            model.transform = data.transform;
+        }
+
+        await model.save().catch((err) => {
             next({
                 status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-                message: "Could not retrieve model"
+                message: "Could not update model"
             });
         });
 
-        this.logger.info("Send response with Model data");
-        res.writeHead(200, {
-            "Content-Type": "application/model",
-            "Content-Disposition": "attachment; filename=" + "example.txt"
-        });
-        res.write(modelObject.Body);
-        res.end(null, 'binary');
-    }
-
-    async getModelsByUser(req, res, next) {
-        // TODO
+        this.sendResponse(res, model);
     }
 
     // Delete a model from db
@@ -102,15 +150,19 @@ export default class extends BaseController {
         }
 
         this.logger.debug("Retrieving model from database");
-        let model = this.Model.findById(req.params.id).catch(err => {
+        let model = this.sequelize.query(
+        `SELECT slide_id, presentation_id, poly_id, transform, user_id 
+        FROM slide_3d_models JOIN presentations ON slide_3d_models.presentation_id = presentations.id 
+        WHERE slide_3d_models.id=` + req.params.id).catch(err=>{
             next({
                 status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-                message: "Error retrieving model"
+                message: "Could not retrieve slide models."
             });
         });
 
         // User does not have access to slides
         this.logger.debug("Validating user authorization");
+
         if (user.id != model.user_id) {
             next({
                 status: this.HttpStatus.UNAUTHORIZED,
@@ -118,18 +170,11 @@ export default class extends BaseController {
             });
         }
 
-        // Delete object from S3 storage
+        // Delete object from SQL DB
         this.logger.debug("Deleting model from S3 storage");
-        await this.S3.deleteObject(model.path).error(err => {
-            next({
-                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-                message: "Could not delete model"
-            });
-        });
-
-        // Delete object from database
-        this.logger.debug("Deleting model from database");
-        await model.destroy().error(err => {
+        await this.SlideModel.destroy({where: {
+            id: req.params.id
+        }}).catch(err => {
             next({
                 status: this.HttpStatus.INTERNAL_SERVER_ERROR,
                 message: "Could not delete model"

@@ -10,7 +10,6 @@ export default {
             presentation: 'Presentations',
             slide_3d_model: 'slide_3d_models',
             slide: 'slides',
-            model: '3d_models'
         }
     },
     s3: {
