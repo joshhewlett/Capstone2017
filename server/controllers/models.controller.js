@@ -11,6 +11,10 @@ export default class extends BaseController {
             this.createModel(req, res, next);
         });
 
+        this.router.get('/:id', (req, res, next) => {
+            this.getModel(req, res, next);
+        })
+
         this.router.put('/:id', (req, res, next) => {
             this.updateModel(req, res, next);
         });
@@ -19,6 +23,18 @@ export default class extends BaseController {
         this.router.delete('/:id', (req, res, next) => {
             this.deleteModel(req, res, next);
         });
+    }
+
+    async getModel(req, res, next){
+        let model = await this.SlideModel.findById(req.params.id).catch(err => {
+            next({
+                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
+                message: "Failed to get model"
+            });
+        });
+
+        this.logger.info("Successfully got model");
+        this.sendResponse(res, model);
     }
 
     async createModel(req, res, next) {

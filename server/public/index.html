@@ -105,6 +105,25 @@
         </p>
     </div>
 
+    <div id="model_endponts">
+        <h3>Models endpoints</h3>
+        <p>
+            <form method="POST" action='/model'>
+                Create a new model:
+
+                <input id="createModel_slideId" name="slide_id" type="number" placeholder="slide id">
+                <input id="createModel_polyId" name="poly_id" type="text" placeholder="poly id">
+                <input id="createModel_transform" name="transform" type="textbox" placeholder="{position: {x: 0, y: 0, z: 0}, rotation: {x: 0, y: 0, z:0}, scale: 1}">
+                <input type="submit" value="POST /model">
+            </form>
+        </p>
+
+        <p>
+            Get a slide by id:
+            <input id="getModelById_id" type="text" placeholder="id">
+            <button onclick="getModelById();">GET /model/:id</button>
+        </p>
+    </div>
 
     <script>
     //
@@ -174,6 +193,11 @@
                 alert("Data Deleted: " + msg);
             }
         });
+    }
+
+    // MODEL FUNCTIONS
+    function getModelById() {
+        window.location = '/model/' + document.getElementById("getModelById_id").value;
     }
 
     </script>

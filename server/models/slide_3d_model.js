@@ -2,7 +2,6 @@ import Sequelize from 'sequelize';
 import sequelize from '../helpers/db.helper';
 import Slide from './slide';
 import Presentation from './presentation';
-import Model from './3d_model';
 
 export default sequelize.define('slide_3d_models', {
     slide_id: {
@@ -38,8 +37,8 @@ export default sequelize.define('slide_3d_models', {
      * },
      * scale: 1
      */
-    transform: {
-        type: Sequelize.JSON,
-        allowNull: false
-    }
+    // transform: {
+    //     type: Sequelize.JSON,
+    //     allowNull: false
+    // }
 });
