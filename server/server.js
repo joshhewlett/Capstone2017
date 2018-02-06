@@ -42,7 +42,17 @@ helpers.passport(app);
  * Configure Middleware
  */
 helpers.middleware(app);
-
+app.use((req, res, next) => {
+    if (process.env.FAKE_USER_AUTHENTICATION === "true") {
+        let id = parseInt(process.env.FAKE_USER_ID);
+        models.user.findById(id).then(user => {
+            req.user = user;
+            next();
+        });
+    } else {
+        next();
+    }
+});
 
 /**
  * Setup routing

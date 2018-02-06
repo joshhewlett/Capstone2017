@@ -44,11 +44,6 @@ export default class extends BaseController {
     // Create a new presentation
     async createPresentation(req, res, next) {
         let user = req.user;
-        if (process.env.FAKE_USER_AUTHENTICATION === "true") {
-            user = {};
-            user.id = parseInt(process.env.FAKE_USER_ID);
-        }
-
         let data = req.body;
 
         console.log(user);
@@ -96,10 +91,6 @@ export default class extends BaseController {
     async getUsersPresentation(req, res, next) {
         // Assume user exists if they got to this point
         let user = req.user;
-        if (process.env.FAKE_USER_AUTHENTICATION === "true") {
-            user = {};
-            user.id = parseInt(process.env.FAKE_USER_ID);
-        }
 
         // Search database for presentations
         let presentations = await this.Presentation.findAll({
@@ -120,10 +111,6 @@ export default class extends BaseController {
     // Retrieve all slides for a given presentation
     async getSlides(req, res, next) {
         let user = req.user;
-        if (process.env.FAKE_USER_AUTHENTICATION === "true") {
-            user = {};
-            user.id = parseInt(process.env.FAKE_USER_ID);
-        }
 
         let presentation = await this.Presentation.findById(req.params.id).catch((err) => {
             next({
@@ -161,10 +148,6 @@ export default class extends BaseController {
     // Returns a presentation object with the given id
     async getPresentation(req, res, next) {
         let user = req.user;
-        if (process.env.FAKE_USER_AUTHENTICATION === "true") {
-            user = {};
-            user.id = parseInt(process.env.FAKE_USER_ID);
-        }
 
         console.log(user);
         let presentation = await this.Presentation.findById(req.params.id).catch((err) => {
@@ -196,11 +179,6 @@ export default class extends BaseController {
     // Update a presentation with the given id
     async updatePresentation(req, res, next) {
         let user = req.user;
-        if (process.env.FAKE_USER_AUTHENTICATION === "true") {
-            user = {};
-            user.id = parseInt(process.env.FAKE_USER_ID);
-        }
-
         let data = req.body;
 
         let presentation = await this.Presentation.findById(req.params.id).catch((err) => {
@@ -238,10 +216,6 @@ export default class extends BaseController {
     // Delete a presentation object with a given id
     async deletePresentation(req, res, next) {
         let user = req.user;
-        if (process.env.FAKE_USER_AUTHENTICATION === "true") {
-            user = {};
-            user.id = parseInt(process.env.FAKE_USER_ID);
-        }
 
         let presentation = await this.Presentation.findById(req.params.id).catch((err) => {
             next({

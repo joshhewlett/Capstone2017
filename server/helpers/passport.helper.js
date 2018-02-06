@@ -13,7 +13,7 @@ export default (app) => {
 
     passport.deserializeUser((id, cb) => {
         app.models.user.findById(id).then(user => {
-            cb(null, data);
+            cb(null, user);
         }).catch((err) => {
             cb(err, null);
         });
