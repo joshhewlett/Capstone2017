@@ -35,6 +35,10 @@ export default class extends BaseController {
             this.deletePresentation(req, res, next);
         });
 
+        this.router.get('/:id/all', (req, res, next) => {
+            this.getAllPresentationData(req, res, next);
+        });
+
     }
 
     // Create a new presentation
@@ -104,7 +108,7 @@ export default class extends BaseController {
             }
         }).catch((err) => {
             next({
-                status: HttpStatus.INTERNAL_SERVER_ERROR,
+                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
                 message: "Error finding presentations"
             });
         });
@@ -258,5 +262,51 @@ export default class extends BaseController {
         await presentation.destroy();
 
         this.sendResponse(res, "Successfully deleted presentation");
+    }
+
+    // Get all data for initializing presentations on clients
+    async getAllPresentationData(req, res, next) {
+        // Get requested presentation object
+        let presentation = await this.Presentation.findById(req.params.id).catch((err) => {
+            next({
+                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
+                message: "Error retrieving presentation"
+            });
+        });
+
+        let slides = await presentation.getSlides();
+
+        let data = {};
+        data.presentation = {};
+        data.presentation.id = presentation.id;
+        data.presentation.name = presentation.name;
+        data.presentation.description = presentation.description;
+        data.presentation.is_live = presentation.is_live;
+        data.presentation.user_id = presentation.user_id;
+        data.presentation.slides = [];
+
+        // console.log(slideModels);
+        for (let slide of slides) {
+            let models = await slide.getModels();
+            let plainSlide = slide.get({
+                plain: true
+            });
+
+            plainSlide.models = [];
+            for (let model of models) {
+                plainSlide.models.push(model.get({
+                    plain: true
+                }));
+            }
+            data.presentation.slides.push(plainSlide);
+
+        }
+
+
+
+
+        // console.log(slides);
+
+        this.sendResponse(res, data);
     }
 }

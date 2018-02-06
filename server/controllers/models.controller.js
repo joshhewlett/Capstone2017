@@ -25,7 +25,7 @@ export default class extends BaseController {
         });
     }
 
-    async getModel(req, res, next){
+    async getModel(req, res, next) {
         let model = await this.SlideModel.findById(req.params.id).catch(err => {
             next({
                 status: this.HttpStatus.INTERNAL_SERVER_ERROR,
@@ -45,26 +45,17 @@ export default class extends BaseController {
         }
 
         let data = req.body;
-
+        data.slide_id = parseInt(data.slide_id);
+        data.transform = JSON.parse(data.transform);
 
         let sanitizedData = {}
-        if (!data.slide_id || typeof data.slide_ !== 'number') {
+        if (!data.slide_id || typeof data.slide_id !== 'number') {
             next({
                 status: this.HttpStatus.BAD_REQUEST,
                 message: "Invalid input"
             });
         } else {
             sanitizedData.slide_id = data.slide_id;
-        }
-
-        if (data.presentation_id && typeof data.presentation_id !== 'number') {
-            // data.presentation_id must be a string
-            next({
-                status: this.HttpStatus.BAD_REQUEST,
-                message: "Invalid input"
-            });
-        } else if (data.presentation_id) {
-            sanitizedData.presentation_id = data.presentation_id;
         }
 
         if (data.poly_id && typeof data.poly_id !== 'string') {
@@ -84,13 +75,12 @@ export default class extends BaseController {
                 message: "Invalid input"
             });
         } else if (data.transform) {
-            sanitizedData.transform = data.transform;
+            sanitizedData.transform = JSON.stringify(data.transform);
         }
 
         // Create model
         let model = await this.SlideModel.create({
-            presentation_id: sanitizedData.presentation_id,
-            slide_id: sanitizedData.slide_id,
+            slideId: sanitizedData.slide_id,
             poly_id: sanitizedData.poly_id,
             transform: sanitizedData.transform
         }).catch((err) => {
@@ -138,7 +128,7 @@ export default class extends BaseController {
         if (data.slide_id && typeof data.slide_id === "number") {
             model.slide_id = data.slide_id;
         }
-        
+
         if (data.poly_id && typeof data.poly_id === "string") {
             model.poly_id = data.poly_id;
         }
@@ -167,9 +157,9 @@ export default class extends BaseController {
 
         this.logger.debug("Retrieving model from database");
         let model = this.sequelize.query(
-        `SELECT slide_id, presentation_id, poly_id, transform, user_id 
+            `SELECT slide_id, presentation_id, poly_id, transform, user_id 
         FROM slide_3d_models JOIN presentations ON slide_3d_models.presentation_id = presentations.id 
-        WHERE slide_3d_models.id=` + req.params.id).catch(err=>{
+        WHERE slide_3d_models.id=` + req.params.id).catch(err => {
             next({
                 status: this.HttpStatus.INTERNAL_SERVER_ERROR,
                 message: "Could not retrieve slide models."
@@ -188,9 +178,11 @@ export default class extends BaseController {
 
         // Delete object from SQL DB
         this.logger.debug("Deleting model from S3 storage");
-        await this.SlideModel.destroy({where: {
-            id: req.params.id
-        }}).catch(err => {
+        await this.SlideModel.destroy({
+            where: {
+                id: req.params.id
+            }
+        }).catch(err => {
             next({
                 status: this.HttpStatus.INTERNAL_SERVER_ERROR,
                 message: "Could not delete model"
