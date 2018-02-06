@@ -117,17 +117,19 @@ export default class extends BaseController {
         //         message: "Could not retrieve slide's models"
         //     }
         // });
-
-        let models = await this.sequelize.query("SELECT * FROM slide_3d_model JOIN 3d_model ON slide_3d_model.model_id=3d_model.id WHERE slide_3d_model.slide_id=" + req.params.id).catch((err) => {
+        let models;
+        try {
+            let slide = await this.Slide.findById(req.params.id);
+            models = await slide.getModels()
+        } catch (err) {
             next({
                 status: this.HttpStatus.INTERNAL_SERVER_ERROR,
                 message: "Could not retrieve slide models."
             });
-        });
-        console.log("==========", models);
+        }
 
         this.logger.info("Successfully retrieved slide models");
-        this.sendResponse(res, "why");
+        this.sendResponse(res, models);
     }
 
     // Get SlideModels for Slide
@@ -149,7 +151,7 @@ export default class extends BaseController {
             });
         });
 
-        let presentation = await this.Presentation.findById(slide.presentation_id).catch((err) => {
+        let presentation = await slide.getPresentation().catch((err) => {
             next({
                 status: this.HttpStatus.INTERNAL_SERVER_ERROR,
                 message: "Could not retrieve presentation"
