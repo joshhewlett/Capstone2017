@@ -59,6 +59,13 @@
             <input id="deletePresentation_id" type="text" placeholder="id">
             <button onclick="deletePresentation();">DELETE /presentation/:id</button>
         </p>
+
+        <p>
+            Get all data for a presentation:
+            <input id="getPresentationData_id" type="text" placeholder="id">
+            <button onclick="getPresentationData();">GET /presentation/:id/all</button>
+        </p>
+
     </div>
     <br>
     <br>
@@ -135,6 +142,10 @@
 
     function getPresentationSlides() {
         window.location = '/presentation/' + document.getElementById("getPresentationSlides_id").value + '/slides';
+    }
+
+    function getPresentationData() {
+        window.location = '/presentation/' + document.getElementById("getPresentationData_id").value + '/all';
     }
 
     function updatePresentation() {
