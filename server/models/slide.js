@@ -6,13 +6,5 @@ export default sequelize.define('slides', {
     sequence: {
         type: Sequelize.INTEGER,
         allowNull: false
-    },
-    presentation_id: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-        references: {
-            model: Presentation,
-            key: 'id'
-        }
     }
 });

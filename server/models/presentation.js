@@ -11,10 +11,10 @@ export default sequelize.define('presentations', {
         type: Sequelize.STRING,
         allowNull: true
     },
-    presented: {
-        type: Sequelize.INTEGER,
+    is_live: {
+        type: Sequelize.BOOLEAN,
         allowNull: false,
-        defaultValue: 0
+        defaultValue: true
     },
     user_id: {
         type: Sequelize.INTEGER,
