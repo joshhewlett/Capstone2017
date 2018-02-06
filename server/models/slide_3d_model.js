@@ -25,4 +25,6 @@ export default sequelize.define('slide_3d_models', {
         type: Sequelize.STRING,
         allowNull: true
     }
+}, {
+    underscored: true
 });

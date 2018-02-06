@@ -80,7 +80,7 @@ export default class extends BaseController {
 
         // Create model
         let model = await this.SlideModel.create({
-            slideId: sanitizedData.slide_id,
+            slide_id: sanitizedData.slide_id,
             poly_id: sanitizedData.poly_id,
             transform: sanitizedData.transform
         }).catch((err) => {

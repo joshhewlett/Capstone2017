@@ -77,7 +77,7 @@ export default class extends BaseController {
         // Calculate sequence number for new slide
         let sequenceNumber = await this.Slide.count({
             where: {
-                presentationId: presentation.id
+                presentation_id: presentation.id
             }
         }).catch((err) => {
             next({
@@ -88,7 +88,7 @@ export default class extends BaseController {
 
         // Create slide
         let slide = await this.Slide.create({
-            presentationId: data.presentation_id,
+            presentation_id: data.presentation_id,
             sequence: sequenceNumber
         }).catch((err) => {
             next({
@@ -158,7 +158,7 @@ export default class extends BaseController {
             });
         });
 
-        let presentation = await this.Presentation.findById(slide.presentationId).catch((err) => {
+        let presentation = await this.Presentation.findById(slide.presentation_id).catch((err) => {
             next({
                 status: this.HttpStatus.INTERNAL_SERVER_ERROR,
                 message: "Could not retrieve presentation"

@@ -24,4 +24,6 @@ export default sequelize.define('presentations', {
             key: 'id'
         }
     }
+}, {
+    underscored: true
 });

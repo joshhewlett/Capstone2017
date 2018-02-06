@@ -9,4 +9,6 @@ export default sequelize.define('users', {
             isEmail: true
         }
     }
+}, {
+    underscored: true
 });

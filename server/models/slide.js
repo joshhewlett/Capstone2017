@@ -7,4 +7,6 @@ export default sequelize.define('slides', {
         type: Sequelize.INTEGER,
         allowNull: false
     }
+}, {
+    underscored: true
 });
