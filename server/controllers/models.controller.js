@@ -27,10 +27,7 @@ export default class extends BaseController {
 
     async getModel(req, res, next) {
         let model = await this.SlideModel.findById(req.params.id).catch(err => {
-            next({
-                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-                message: "Failed to get model"
-            });
+            this.handleError(next, "Failed to retrieve model");
         });
 
         this.logger.info("Successfully got model");
@@ -46,30 +43,21 @@ export default class extends BaseController {
 
         let sanitizedData = {}
         if (!data.slide_id || typeof data.slide_id !== 'number') {
-            next({
-                status: this.HttpStatus.BAD_REQUEST,
-                message: "Invalid input"
-            });
+            this.handleError(next, "Invalid input", this.HttpStatus.BAD_REQUEST);
         } else {
             sanitizedData.slide_id = data.slide_id;
         }
 
         if (data.poly_id && typeof data.poly_id !== 'string') {
             // data.poly_id must be a string
-            next({
-                status: this.HttpStatus.BAD_REQUEST,
-                message: "Invalid input"
-            });
+            this.handleError(next, "Invalid input", this.HttpStatus.BAD_REQUEST);
         } else if (data.poly_id) {
             sanitizedData.poly_id = data.poly_id;
         }
 
         if (data.transform && typeof data.transform !== 'object') {
             // data.transform must be a string
-            next({
-                status: this.HttpStatus.BAD_REQUEST,
-                message: "Invalid input"
-            });
+            this.handleError(next, "Invalid input", this.HttpStatus.BAD_REQUEST);
         } else if (data.transform) {
             sanitizedData.transform = JSON.stringify(data.transform);
         }
@@ -80,10 +68,7 @@ export default class extends BaseController {
             poly_id: sanitizedData.poly_id,
             transform: sanitizedData.transform
         }).catch((err) => {
-            next({
-                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-                message: "Error creating model object"
-            });
+            this.handleError(next, "Error creating model object");
         });
 
         this.logger.info("Successfully created model")
@@ -95,25 +80,16 @@ export default class extends BaseController {
         let data = req.body;
 
         let model = await this.SlideModel.findById(req.params.id).catch(err => {
-            next({
-                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-                message: "Could not find model"
-            });
+            this.handleError(next, "Failed to retrieve model");
         });
 
         let presentation = await this.Presentation.findById(model.presentation_id).catch(err => {
-            next({
-                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-                message: "Could not find presentation"
-            });
+            this.handleError(next, "Failed to retrieve presentation");
         });
 
         // User does not have access to slides
         if (user.id != presentation.user_id) {
-            next({
-                status: this.HttpStatus.UNAUTHORIZED,
-                message: "You don't have access to that!"
-            })
+            this.handleError(next, "You don't have access to that!", this.HttpStatus.UNAUTHORIZED);
         }
 
         if (data.slide_id && typeof data.slide_id === "number") {
@@ -129,10 +105,7 @@ export default class extends BaseController {
         }
 
         await model.save().catch((err) => {
-            next({
-                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-                message: "Could not update model"
-            });
+            this.handleError(next, "Failed to update model");
         });
 
         this.sendResponse(res, model);
@@ -147,20 +120,14 @@ export default class extends BaseController {
             `SELECT slide_id, presentation_id, poly_id, transform, user_id 
         FROM slide_3d_models JOIN presentations ON slide_3d_models.presentation_id = presentations.id 
         WHERE slide_3d_models.id=` + req.params.id).catch(err => {
-            next({
-                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-                message: "Could not retrieve slide models."
-            });
+            this.handleError(next, "Failed to retrieve slide models");
         });
 
         // User does not have access to slides
         this.logger.debug("Validating user authorization");
 
         if (user.id != model.user_id) {
-            next({
-                status: this.HttpStatus.UNAUTHORIZED,
-                message: "You are not authorized to perform this action."
-            });
+            this.handleError(next, "You are not authorized to perform this action", this.HttpStatus.UNAUTHORIZED);
         }
 
         // Delete object from SQL DB
@@ -170,10 +137,7 @@ export default class extends BaseController {
                 id: req.params.id
             }
         }).catch(err => {
-            next({
-                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-                message: "Could not delete model"
-            });
+            this.handleError(next, "Failed to delete model");
         });
 
         this.logger.info("Successfully deleted model");

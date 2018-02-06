@@ -38,4 +38,15 @@ export default class {
         }
         res.status(status).send(data);
     }
+
+    async handleError(next, msg, status) {
+        if (!status) {
+            status = this.HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+
+        next({
+            status: status,
+            message: msg
+        });
+    }
 }

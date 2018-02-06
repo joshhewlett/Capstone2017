@@ -46,27 +46,19 @@ export default class extends BaseController {
         let user = req.user;
         let data = req.body;
 
-        console.log(user);
-        console.log("DATA: ", data);
         // Sanitize input
         // Assume request can only get here if user exists
         let sanitizedData = {}
         if (!data.name || typeof data.name !== 'string') {
             // data.name cannot be null and must be a string
-            next({
-                status: this.HttpStatus.BAD_REQUEST,
-                message: "Invalid input"
-            });
+            this.handleError(next, "Invalid input", this.HttpStatus.BAD_REQUEST);
         } else {
             sanitizedData.name = data.name;
         }
 
         if (data.description && typeof data.description !== 'string') {
             // data.description must be a string
-            next({
-                status: this.HttpStatus.BAD_REQUEST,
-                message: "Invalid input"
-            });
+            this.handleError(next, "Invalid input", this.HttpStatus.BAD_REQUEST);
         } else if (data.description) {
             sanitizedData.description = data.description;
         }
@@ -77,10 +69,7 @@ export default class extends BaseController {
             name: sanitizedData.name,
             description: sanitizedData.description
         }).catch((err) => {
-            next({
-                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-                message: "Error creating presentation object"
-            });
+            this.handleError(next, "Failed to create presentation");
         });
 
         this.logger.info("Successfully created presentation")
@@ -94,10 +83,7 @@ export default class extends BaseController {
 
         // Search database for presentations
         let presentations = await user.getPresentations().catch((err) => {
-            next({
-                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-                message: "Error finding presentations"
-            });
+            this.handleError(next, "Failed to find presentations");
         });
 
         this.logger.info("Successfully received presentations");
@@ -109,26 +95,17 @@ export default class extends BaseController {
         let user = req.user;
 
         let presentation = await this.Presentation.findById(req.params.id).catch((err) => {
-            next({
-                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-                message: "Could not retrieve presentation"
-            });
+            this.handleError("Failed to retrieve presentation");
         });
 
         // User does not have access to slides
         if (user.id != presentation.user_id) {
-            next({
-                status: this.HttpStatus.UNAUTHORIZED,
-                message: "You are not authorized to perform this action!"
-            });
+            this.handleError(next, "You are not authorized to perform this action!", this.HttpStatus.UNAUTHORIZED);
         }
 
         // Get slide objects
         let slides = await presentation.getSlides().catch((err) => {
-            next({
-                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-                message: "Could not retrive slides"
-            });
+            this.handleError(next, "Failed to retrieve slides");
         });
 
         let responseData = {};
@@ -143,26 +120,17 @@ export default class extends BaseController {
 
         console.log(user);
         let presentation = await this.Presentation.findById(req.params.id).catch((err) => {
-            next({
-                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-                message: "Could not retreive presentation"
-            });
+            this.handleError(next, "Failed to retrieve presentation");
         });
 
         // Check if presentaiton is null
         if (!presentation) {
-            next({
-                status: this.HttpStatus.NOT_FOUND,
-                message: "Presentation not found"
-            });
+            this.handleError(next, "Presentation not found", this.HttpStatus.NOT_FOUND);
         }
 
         // User does not have access to slides
         if (user.id != presentation.user_id) {
-            next({
-                status: this.HttpStatus.UNAUTHORIZED,
-                message: "You don't have access to that!"
-            });
+            this.handleError(next, "You don't have access to that!", this.HttpStatus.UNAUTHORIZED);
         }
 
         this.sendResponse(res, presentation);
@@ -174,18 +142,12 @@ export default class extends BaseController {
         let data = req.body;
 
         let presentation = await this.Presentation.findById(req.params.id).catch((err) => {
-            next({
-                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-                message: "Could not find presentation"
-            });
+            this.handleError(next, "Failed to retrieve presentation");
         });
 
         // User does not have access to slides
         if (user.id != presentation.user_id) {
-            next({
-                status: this.HttpStatus.UNAUTHORIZED,
-                message: "You don't have access to that!"
-            })
+            this.handleError(next, "You don't have access to that!", this.HttpStatus.UNAUTHORIZED);
         }
 
         if (data.name && typeof data.name === "string") {
@@ -196,10 +158,7 @@ export default class extends BaseController {
         }
 
         await presentation.save().catch((err) => {
-            next({
-                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-                message: "Could not update presentation"
-            });
+            this.handleError(next, "Failed to update presentation");
         });
 
         this.sendResponse(res, presentation);
@@ -210,18 +169,12 @@ export default class extends BaseController {
         let user = req.user;
 
         let presentation = await this.Presentation.findById(req.params.id).catch((err) => {
-            next({
-                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-                message: "Error retrieving presentation"
-            });
+            this.handleError(next, "Failed to retrieve presentation");
         });
 
         // User does not have access to slides
         if (user.id != presentation.user_id) {
-            next({
-                status: this.HttpStatus.UNAUTHORIZED,
-                message: "You are not authorized to perform this action."
-            });
+            this.handleError(next, "You are not authorized to perform this action", this.HttpStatus.UNAUTHORIZED);
         }
 
         await presentation.destroy();
@@ -233,14 +186,12 @@ export default class extends BaseController {
     async getAllPresentationData(req, res, next) {
         // Get requested presentation object
         let presentation = await this.Presentation.findById(req.params.id).catch((err) => {
-            next({
-                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-                message: "Error retrieving presentation"
-            });
+            this.handleError(next, "Failed to retrieve presentation");
         });
 
         let slides = await presentation.getSlides();
 
+        // Prepare response payload
         let data = {};
         data.presentation = {};
         data.presentation.id = presentation.id;
@@ -250,7 +201,7 @@ export default class extends BaseController {
         data.presentation.user_id = presentation.user_id;
         data.presentation.slides = [];
 
-        // console.log(slideModels);
+        // Get slide models for each slide
         for (let slide of slides) {
             let models = await slide.getModels();
             let plainSlide = slide.get({
