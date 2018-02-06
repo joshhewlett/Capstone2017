@@ -93,11 +93,7 @@ export default class extends BaseController {
         let user = req.user;
 
         // Search database for presentations
-        let presentations = await this.Presentation.findAll({
-            where: {
-                user_id: user.id
-            }
-        }).catch((err) => {
+        let presentations = await user.getPresentations().catch((err) => {
             next({
                 status: this.HttpStatus.INTERNAL_SERVER_ERROR,
                 message: "Error finding presentations"
@@ -128,11 +124,7 @@ export default class extends BaseController {
         }
 
         // Get slide objects
-        let slides = await this.Slide.findAll({
-            where: {
-                presentation_id: req.params.id
-            }
-        }).catch((err) => {
+        let slides = await presentation.getSlides().catch((err) => {
             next({
                 status: this.HttpStatus.INTERNAL_SERVER_ERROR,
                 message: "Could not retrive slides"
@@ -225,7 +217,6 @@ export default class extends BaseController {
         });
 
         // User does not have access to slides
-        console.log(user + "\n" + presentation);
         if (user.id != presentation.user_id) {
             next({
                 status: this.HttpStatus.UNAUTHORIZED,
@@ -275,11 +266,6 @@ export default class extends BaseController {
             data.presentation.slides.push(plainSlide);
 
         }
-
-
-
-
-        // console.log(slides);
 
         this.sendResponse(res, data);
     }

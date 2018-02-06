@@ -147,11 +147,11 @@ export default class extends BaseController {
             `SELECT slide_id, presentation_id, poly_id, transform, user_id 
         FROM slide_3d_models JOIN presentations ON slide_3d_models.presentation_id = presentations.id 
         WHERE slide_3d_models.id=` + req.params.id).catch(err => {
-                next({
-                    status: this.HttpStatus.INTERNAL_SERVER_ERROR,
-                    message: "Could not retrieve slide models."
-                });
+            next({
+                status: this.HttpStatus.INTERNAL_SERVER_ERROR,
+                message: "Could not retrieve slide models."
             });
+        });
 
         // User does not have access to slides
         this.logger.debug("Validating user authorization");
