@@ -12,6 +12,8 @@ import models from './models';
 import db from './db';
 import config from './config';
 import middleware from './middleware';
+import socketIO from 'socket.io';
+import path from 'path';
 
 const logger = helpers.logging();
 
@@ -27,8 +29,10 @@ app.db = db;
 app.config = config;
 app.middleware = middleware;
 
+
+app.use(express.static(path.resolve() + '/node_modules'));
 app.get("/", (req, res) => {
-    res.send("Hello, Doug!");
+    res.send("Welcome to [HoloDeck]");
 });
 
 
@@ -71,4 +75,10 @@ var server = http.Server(app);
 var port = process.env.SERVER_PORT;
 server.listen(port, () => {
     logger.info("Server listening on port ", port);
+});
+
+let io = new socketIO(server);
+io.on('connection', (client) => {
+    helpers.socket(client);
+    console.log("Hello");
 });
