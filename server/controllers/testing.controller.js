@@ -11,11 +11,19 @@ export default class extends BaseController {
             this.getMainPage(req, res);
         });
 
+        this.router.get('/socket', (req, res) => {
+            this.getSocketPage(req, res);
+        });
+
     }
 
     async getMainPage(req, res) {
         res.sendFile(this.staticDir + 'index.html');
 
+    }
+
+    async getSocketPage(req, res) {
+        res.sendFile(this.staticDir + 'socketTest.html');
     }
 
 }

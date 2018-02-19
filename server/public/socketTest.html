@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="/socket.io/socket.io.js"></script>
+    <title>Socket.IO Test</title>
+</head>
+
+<body>
+
+    <h1>Socket.IO Test Page</h1>
+
+    <!-- Event emitters -->
+
+    <div>
+        <h3>Emitters (Hololens Client)</h3>
+
+        <p>
+            Update:
+            <input id="updateEmit" type="text" placeholder="id">
+            <button onclick="updateEmit();">Emit 'update'</button>
+        </p>
+
+    </div>
+
+    <script>
+    var socket = io.connect('http://localhost:3000');
+    socket.on('connect', function(data) {
+        console.log(data);
+    });
+
+    function updateEmit() {
+        console.log("hi");
+        let transform = document.getElementById("updateEmit").value;
+        socket.emit('update', transform);
+    }
+
+    </script>
+
+</body>
+
+</html>
