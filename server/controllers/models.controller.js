@@ -116,17 +116,20 @@ export default class extends BaseController {
         let user = req.user;
 
         this.logger.debug("Retrieving model from database");
-        let model = this.sequelize.query(
-            `SELECT slide_id, presentation_id, poly_id, transform, user_id 
-        FROM slide_3d_models JOIN presentations ON slide_3d_models.presentation_id = presentations.id 
-        WHERE slide_3d_models.id=` + req.params.id).catch(err => {
-            this.handleError(next, "Failed to retrieve slide models");
-        });
+        // let model = await this.sequelize.query(
+        //     `SELECT slide_id, presentation_id, poly_id, transform, user_id 
+        // FROM slide_3d_models JOIN presentations ON slide_3d_models.presentation_id = presentations.id 
+        // WHERE slide_3d_models.id=` + req.params.id).catch(err => {
+        //     this.handleError(next, "Failed to retrieve slide models");
+        // });
+        let model = await this.SlideModel.findById(req.params.id);
+        let slide = await model.getSlide();
+        let presentation = await slide.getPresentation();
 
         // User does not have access to slides
         this.logger.debug("Validating user authorization");
 
-        if (user.id != model.user_id) {
+        if (user.id != presentation.user_id) {
             this.handleError(next, "You are not authorized to perform this action", this.HttpStatus.UNAUTHORIZED);
         }
 
