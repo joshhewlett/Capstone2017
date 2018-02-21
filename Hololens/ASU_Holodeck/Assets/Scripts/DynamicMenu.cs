@@ -11,6 +11,7 @@ public abstract class DynamicMenu : MonoBehaviour, IInputClickHandler, IFocusabl
     protected Material highlightSelectionMaterial;
     protected Material defaultMaterial;
     public int toggleMenuUpDown = 0;
+    public bool interacting;
     //private Coroutine coroutine;
 
 
@@ -24,6 +25,7 @@ public abstract class DynamicMenu : MonoBehaviour, IInputClickHandler, IFocusabl
         //highlightSelectionMaterial = Resources.Load("Materials/Outline_Material", typeof(Material)) as Material;
         //unfocusedColor = defaultMaterial.GetColor("_Color");
         menuOptions.SetActive(false);           // Set to false by default because edit menu must be toggled on.
+        interacting = false;
     }
 
     /**
@@ -31,24 +33,22 @@ public abstract class DynamicMenu : MonoBehaviour, IInputClickHandler, IFocusabl
      * TODO: Make changes to have menu animate itself up and down based on...Gaze?.
      */ 
     public virtual void OnInputClicked(InputClickedEventData eventData) {
-        //this.GetComponent<HandDraggable>().SetDragging(false);
-        toggleMenuUpDown++;
-        if (toggleMenuUpDown % 2 == 0) {    // If not triggered stop
-            menuOptions.SetActive(false);
-        } else {                                // otherwise trigger menu
-            menuOptions.SetActive(true);
+        menuOptions.SetActive(true);
+        if (menuOptions.activeInHierarchy) {
+            interacting = true;
         }
     }
-
 
     /**
     * Method impleneted from IFocusable interface. Retrieving data from GazeManager apart of InputManager.
     * This method will start thread and change color back to 'highlighted' state since user looks at this game object.
     */
     public virtual void OnFocusEnter() {
-        gameObject.GetComponent<Renderer>().material = highlightSelectionMaterial;
+        // gameObject.GetComponent<Renderer>().material = highlightSelectionMaterial;
         /*StopAllCoroutines();
         coroutine = StartCoroutine("InstantiateMenu");*/
+        menuOptions.SetActive(true);
+        //Debug.Log("Gaze set:\t" + menuOptions.activeInHierarchy);
     }
 
     /**
@@ -56,21 +56,9 @@ public abstract class DynamicMenu : MonoBehaviour, IInputClickHandler, IFocusabl
      * This method will stop thread and return color back to original state since user looks away.
      */
     public virtual void OnFocusExit() {
-        // If we aren't interacting with game object.
-        if (!(menuOptions.activeInHierarchy)) {
-            gameObject.GetComponent<Renderer>().material = defaultMaterial;
+        if (!interacting) {
+            menuOptions.SetActive(false);
+            //Debug.Log("Gaze set:\t" + menuOptions.activeInHierarchy);
         }
     }
-
-
-    /*IEnumerator InstantiateMenu() {
-        toggleMenuUpDown++;
-        if (toggleMenuUpDown % 2 == 0) {    // If not triggered stop
-            menuOptions.SetActive(false);
-            //yield return new WaitForSeconds(5);
-        } else {                                // otherwise trigger menu
-            menuOptions.SetActive(true);
-        }
-        yield return null;
-    }*/
 }

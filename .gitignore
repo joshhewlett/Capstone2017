@@ -10,6 +10,9 @@ Library/
 iOS_Capstone/
 iOS_Holodeck/
 !iOS_Holodeck/Assets/*.cs
+Hololens/
+!Hololens/ASU_Holodeck/Assets/*.cs
+!Hololens/ASU_Holodeck/Assets/Scripts/*
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #

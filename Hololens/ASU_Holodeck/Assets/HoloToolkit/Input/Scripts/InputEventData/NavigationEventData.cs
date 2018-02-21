@@ -8,9 +8,7 @@ using UnityEngine.EventSystems;
 namespace HoloToolkit.Unity.InputModule
 {
     /// <summary>
-    /// Describes an input event that involves content 
-    /// 
-    //.
+    /// Describes an input event that involves content navigation.
     /// </summary>
     public class NavigationEventData : InputEventData
     {

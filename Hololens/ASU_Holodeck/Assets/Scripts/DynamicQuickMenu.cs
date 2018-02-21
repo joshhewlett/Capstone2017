@@ -21,18 +21,26 @@ public class DynamicQuickMenu : DynamicMenu {
     public override void OnInputClicked(InputClickedEventData eventData) {
         //this.GetComponent<HandDraggable>().SetDragging(false);
         toggleMenuUpDown++;
-        if (toggleMenuUpDown % 2 == 0) {    // If not triggered stop
-            // Here we turn off all menu options which will allow us to 
-            // start with a fresh state if we close away quick menu and re-open it.
-            // TODO: Fix this toggling.
-            /*foreach (Transform child in menuOptions.transform) {
-                child.gameObject.SetActive(false);
-            }*/
+        if (toggleMenuUpDown % 2 == 0) { 
             menuOptions.SetActive(false);
         }
         else {                                // otherwise trigger menu
             menuOptions.SetActive(true);
         }
+    }
+
+    /**
+    * Method impleneted from IFocusable interface. Retrieving data from GazeManager apart of InputManager.
+    * This method will start thread and change color back to 'highlighted' state since user looks at this game object.
+    */
+    public override void OnFocusEnter() {
+    }
+
+    /**
+     * Method impleneted from IFocusable interface. Retrieving data from GazeManager apart of InputManager.
+     * This method will stop thread and return color back to original state since user looks away.
+     */
+    public override void OnFocusExit() {
     }
 
 }
