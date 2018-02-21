@@ -13,7 +13,7 @@
 <body>
 
     <div>
-        <h3>Presentation endpoints</h3>
+        <h2>Presentation endpoints</h2>
 
         <p>
             Get user's presentations
@@ -68,13 +68,12 @@
 
     </div>
     <br>
-    <br>
 
 
     <!-- SLIDES ENDPOINTS -->
 
     <div>
-        <h3>Slides endpoints</h3>
+        <h2>Slides endpoints</h2>
 
         <p>
             <form method="POST" action='/slide'>
@@ -112,23 +111,46 @@
         </p>
     </div>
 
+    <br>
     <div id="model_endponts">
-        <h3>Models endpoints</h3>
+        <h2>Models endpoints</h2>
         <p>
-            <form method="POST" action='/model'>
-                Create a new model:
+            Create a new model:
 
-                <input id="createModel_slideId" name="slide_id" type="number" placeholder="slide id">
-                <input id="createModel_polyId" name="poly_id" type="text" placeholder="poly id">
-                <input id="createModel_transform" name="transform" type="textbox" placeholder="{position: {x: 0, y: 0, z: 0}, rotation: {x: 0, y: 0, z:0}, scale: 1}">
-                <input type="submit" value="POST /model">
-            </form>
+            <input id="createModel_slideId" name="slide_id" type="number" style="width: 30px;" placeholder="slide id">
+            <input id="createModel_polyId" name="poly_id" type="text" style="width: 100px;" placeholder="poly id">
+
+            <br>
+            <p>
+                <span>Position:&nbsp;</span>
+                <input id="createModel_transform_posX" type="text" style="width: 30px;" placeholder="X pos">
+                <input id="createModel_transform_posY" type="text" style="width: 30px;" placeholder="Y pos">
+                <input id="createModel_transform_posZ" type="text" style="width: 30px;" placeholder="Z pos">
+
+                <span>&nbsp;&nbsp;Rotation:&nbsp;</span>
+                <input id="createModel_transform_rotX" type="text" style="width: 30px;" placeholder="X rot">
+                <input id="createModel_transform_rotY" type="text" style="width: 30px;" placeholder="Y rot">
+                <input id="createModel_transform_rotZ" type="text" style="width: 30px;" placeholder="Z rot">
+
+                <span>&nbsp;&nbsp;Scale:&nbsp;</span>
+                <input id="createModel_transform_scale" type="text" style="width: 30px;" placeholder="Scale">
+            </p>
+
+
+            <button onclick="createModel();">POST /model</button>
+
         </p>
 
         <p>
-            Get a slide by id:
+            Get a model by id:
             <input id="getModelById_id" type="text" placeholder="id">
             <button onclick="getModelById();">GET /model/:id</button>
+        </p>
+
+        <p>
+            Delete a model by id:
+            <input id="deleteModelById_id" type="text" placeholder="id">
+            <button onclick="deleteModelById();">DELETE /model/:id</button>
         </p>
     </div>
 
@@ -209,6 +231,67 @@
     // MODEL FUNCTIONS
     function getModelById() {
         window.location = '/model/' + document.getElementById("getModelById_id").value;
+    }
+
+    function createModel() {
+        let slide_id = parseInt(document.getElementById("createModel_slideId").value);
+        let poly_id = document.getElementById("createModel_polyId").value;
+
+        let position = {};
+        position.x = document.getElementById("createModel_transform_posX").value == "" ? 0 : parseInt(document.getElementById("createModel_transform_posX").value);
+        position.y = document.getElementById("createModel_transform_posY").value == "" ? 0 : parseInt(document.getElementById("createModel_transform_posY").value);
+        position.z = document.getElementById("createModel_transform_posZ").value == "" ? 0 : parseInt(document.getElementById("createModel_transform_posZ").value);
+
+        let rotation = {};
+        rotation.x = document.getElementById("createModel_transform_rotX").value == "" ? 0 : parseInt(document.getElementById("createModel_transform_rotX").value);
+        rotation.y = document.getElementById("createModel_transform_rotY").value == "" ? 0 : parseInt(document.getElementById("createModel_transform_rotY").value);
+        rotation.z = document.getElementById("createModel_transform_rotZ").value == "" ? 0 : parseInt(document.getElementById("createModel_transform_rotZ").value);
+
+        let scale = document.getElementById("createModel_transform_scale").value == "" ? 1 : parseInt(document.getElementById("createModel_transform_scale").value);
+
+        let transform = {
+            position,
+            rotation,
+            scale
+        };
+
+        transform = JSON.stringify(transform);
+
+        let data = {
+            slide_id,
+            poly_id,
+            transform
+        }
+
+        console.log(data);
+        let url = '/model';
+        $.ajax({
+            type: "POST",
+            url: url,
+            data: data,
+            success: function(msg) {
+                msg = JSON.stringify(msg);
+                alert("Model created: " + msg);
+            }
+        });
+
+        console.log("Position X: ", {
+            position,
+            rotation,
+            scale
+        });
+    }
+
+    function deleteModelById() {
+        let id = document.getElementById("deleteModelById_id").value;
+        let url = '/model/' + id;
+        $.ajax({
+            type: "DELETE",
+            url: url,
+            success: function(msg) {
+                alert("Model Deleted: " + msg);
+            }
+        });
     }
 
     </script>

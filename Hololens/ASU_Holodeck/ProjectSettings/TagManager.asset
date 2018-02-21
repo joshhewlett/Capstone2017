@@ -6,6 +6,14 @@ TagManager:
   tags:
   - MenuOption
   - ImportedModel
+  - ThumbnailIcon
+  - ManipulationType
+  - ObjectMenu
+  - KeypointManipulationType
+  - ModelMenuToggle
+  - AssetThumbnails
+  - ObjectMenuButton
+  - QuickMenuHeader
   layers:
   - Default
   - TransparentFX
