@@ -8,6 +8,8 @@
 Temp/
 Library/
 iOS_Capstone/
+iOS_Holodeck/
+!iOS_Holodeck/Assets/*.cs
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
