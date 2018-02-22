@@ -22,7 +22,8 @@ export default class {
     async sendResponse(res, data, ...metadata) {
         let status = 200;
         if (!res || !data) {
-            throw "Response and Data required";
+            res.status(500).send("Internal server error");
+            return;
         }
         if (metadata.length > 0) {
             if (typeof(metadata[0] === "number")) {
