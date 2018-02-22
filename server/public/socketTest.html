@@ -6,6 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="/socket.io/socket.io.js"></script>
+
+    <style>
+    body {
+        background-color: rgb(240, 240, 240);
+    }
+
+    </style>
     <title>Socket.IO Test</title>
 </head>
 
@@ -17,25 +24,348 @@
 
     <div>
         <h3>Emitters (Hololens Client)</h3>
-
-        <p>
-            Update:
-            <input id="updateEmit" type="text" placeholder="id">
-            <button onclick="updateEmit();">Emit 'update'</button>
+        <p id="emitError" style="width: 100%; visibility:hidden;">
+            <strong style="color:red;">Error: </strong>
+            <span id="errorMsg"></span>
+            <button onclick=" clearError(); ">Clear error</button>
         </p>
+        <hr>
+        <h3 style="color:blue ">--- Update ---</h3>
+
+        <div id="updateDiv">
+
+            <p style="display: inline-block; width:100%;">
+                Choose model id:
+                <input id="emitUpdate_modelId" type="number " style="width: 50px; " placeholder="model id ">
+
+                <br>
+                <p style="display: inline; width:30%; float:left;">
+                    <strong style="font-size: 25px; ">Manual</strong>
+                    <br>
+                    <span>Position:&nbsp;</span>
+                    <input id="emitUpdate_transform_posX " type="text " style="width: 30px; " placeholder="X pos ">
+                    <input id="emitUpdate_transform_posY " type="text " style="width: 30px; " placeholder="Y pos ">
+                    <input id="emitUpdate_transform_posZ " type="text " style="width: 30px; " placeholder="Z pos ">
+                    <br>
+                    <span>Rotation:&nbsp;</span>
+                    <input id="emitUpdate_transform_rotX " type="text " style="width: 30px; " placeholder="X rot ">
+                    <input id="emitUpdate_transform_rotY " type="text " style="width: 30px; " placeholder="Y rot ">
+                    <input id="emitUpdate_transform_rotZ " type="text " style="width: 30px; " placeholder="Z rot ">
+                    <br>
+                    <span>Scale:&nbsp;</span>
+                    <input id="emitUpdate_transform_scale " type="text " style="width: 30px; " placeholder="Scale ">
+                    <button onclick="emitUpdate();">Emit 'update'</button>
+                    <button onclick="resetToOrigin();">Reset object to origin</button>
+                </p>
+
+                <p style="display: inline; float:left;">
+                    <strong style="font-size: 25px; ">Automatic</strong>
+                    <br>
+                    <!-- Animation style -->
+                    <label for="smoothAnim">Smooth:</label>
+                    <input type="radio" id="smoothAnim" name="animationStyle" value="smooth">
+
+                    <label for="randomAnim">&nbsp;&nbsp;Random: </label>
+                    <input type="radio" id="randomAnim" name="animationStyle" value="random">
+
+                    <!-- Position, Rotation, Scale options -->
+                    <br>
+                    <label for="positionCB">Position:</label>
+                    <input id="positionCB" name="positionCB" type="checkbox">
+                    <label for="rotationCB">&nbsp;Rotation:</label>
+                    <input id="rotationCB" name="rotationCB" type="checkbox">
+                    <label for="scaleCB">&nbsp;Scale:</label>
+                    <input id="scaleCB" name="scaleCB" type="checkbox">
+                    <br>
+
+                    <!-- Step size -->
+                    <label for="stepSize">Step size or max for random:</label>
+                    <input id="stepSize" style="width:50px;" value="0.2" step="0.1" type="number">
+                    <br>
+
+                    <!-- Updates per second -->
+                    <label for="updatesPerSecond">Updates per second:</label>
+                    <input id="updatesPerSecond" style="width:50px;" value="60" type="number">
+                    <br>
+                    <!-- Updates per second -->
+                    <button id="automaticUpdatesSwitch" style="color:green;" onclick="startAutomaticUpdates();">Start automatic updates</button>
+                </p>
+                <br>
+
+            </p>
+            <br>
+
+
+        </div>
 
     </div>
 
     <script>
+    // Connect to SocketIO
     var socket = io.connect('http://localhost:3000');
     socket.on('connect', function(data) {
         console.log(data);
     });
 
-    function updateEmit() {
-        console.log("hi");
-        let transform = document.getElementById("updateEmit").value;
-        socket.emit('update', transform);
+    // Automatic updates setup
+    let updateIntervalSeconds = 17;
+    var updateTimer;
+
+    // Initialize modelId
+    let modelId = document.getElementById("emitUpdate_modelId").value;
+
+    // Values for x, y, z position, rotation and scale
+    let xPos = 0;
+    let yPos = 0;
+    let zPos = 0;
+    let xRot = 0;
+    let yRot = 0;
+    let zRot = 0;
+    let scale = 1;
+
+    // Values for step size and current step
+    let stepSize = parseFloat(document.getElementById("stepSize").value);
+    let currentStepVal = 0;
+    let looper = stepSize;
+
+    // Booleans indicating whether auto-update should be updating
+    // respective transform property
+    let updatePos, updateRot, updateScale = false;
+
+    // Radio value for animation style
+    let chosenRadio = null;
+
+
+    /*
+     * ===== Automatic updating functions =====
+     */
+
+    // Start automatic updates
+    function startAutomaticUpdates() {
+
+        updateUserSettings();
+
+        // Choose smooth or random updates
+        if (chosenRadio == "smooth") {
+            currentStepVal = 0;
+            looper = stepSize;
+            updateTimer = setInterval(function() {
+                smoothAutoUpdates();
+            }, updateIntervalSeconds);
+        } else if (chosenRadio == "random") {
+            updateTimer = setInterval(function() {
+                randomAutoUpdates();
+            }, updateIntervalSeconds);
+        }
+
+        // Update toggle button to give user option to stop updates
+        let button = document.getElementById("automaticUpdatesSwitch");
+        button.innerHTML = "Stop automatic updates";
+        button.style.color = "red";
+        button.setAttribute("onclick", "stopAutomaticUpdates();");
+
+    }
+
+    // Stop the automatic updates
+    function stopAutomaticUpdates() {
+        // Clear timer
+        clearInterval(updateTimer);
+
+        // Update toggle button to give user option to start updates
+        let button = document.getElementById("automaticUpdatesSwitch");
+        button.innerHTML = "Start automatic updates";
+        button.style.color = "green";
+        button.setAttribute("onclick", "startAutomaticUpdates();");
+    }
+
+    // Defines behavior of random updates
+    function randomAutoUpdates() {
+        updateUserSettings();
+
+        // If settings are no longer random, stop animation
+        if (chosenRadio != "random") {
+            clearInterval(updateTimer);
+            startAutomaticUpdates();
+            return;
+        }
+
+        // Give random position according to settings
+        if (updatePos) {
+            xPos = Math.random() * stepSize;
+            yPos = Math.random() * stepSize;
+            zPos = Math.random() * stepSize;
+        }
+        if (updateRot) {
+            xRot = Math.random() * stepSize;
+            yRot = Math.random() * stepSize;
+            zRot = Math.random() * stepSize;
+        }
+        if (updateScale) {
+            scale = Math.random() * stepSize;
+        }
+
+        emitUpdate();
+    }
+
+    // Defines behavior of smooth animation updates
+    function smoothAutoUpdates() {
+        updateUserSettings();
+
+        // If settings are no longer smooth, stop animation
+        if (chosenRadio != "smooth") {
+            clearInterval(updateTimer);
+            startAutomaticUpdates();
+            return;
+        }
+        // Incremenet current step to keep track of looping
+        currentStepVal += looper;
+
+
+        // If currentStepVal has reached max or min,
+        // reverse loop
+        if (currentStepVal <= -3 || currentStepVal >= 3) {
+            looper *= -1;
+        }
+
+        // Incremement according to settings
+        if (updatePos) {
+            xPos += looper;
+            yPos += looper;
+            zPos += looper;
+        }
+        if (updateRot) {
+            xRot += looper;
+            yRot += looper;
+            zRot += looper;
+        }
+        if (updateScale) {
+            scale += looper;
+        }
+
+        emitUpdate();
+    }
+
+    /*
+     * ===== Manual Update =====
+     */
+
+    function manualUpdate() {
+        let modelId = document.getElementById("emitUpdate_modelId").value;
+        if (!modelId) {
+            emitError("Must provide model id");
+            return;
+        }
+
+        xPos = document.getElementById("emitUpdate_transform_posX ").value == " " ? 0 : parseFloat(document.getElementById("emitUpdate_transform_posX ").value);
+        yPos = document.getElementById("emitUpdate_transform_posY ").value == " " ? 0 : parseFloat(document.getElementById("emitUpdate_transform_posY ").value);
+        zPos = document.getElementById("emitUpdate_transform_posZ ").value == " " ? 0 : parseFloat(document.getElementById("emitUpdate_transform_posZ ").value);
+
+        xRot = document.getElementById("emitUpdate_transform_rotX ").value == " " ? 0 : parseFloat(document.getElementById("emitUpdate_transform_rotX ").value);
+        yRot = document.getElementById("emitUpdate_transform_rotY ").value == " " ? 0 : parseFloat(document.getElementById("emitUpdate_transform_rotY ").value);
+        zRot = document.getElementById("emitUpdate_transform_rotZ ").value == " " ? 0 : parseFloat(document.getElementById("emitUpdate_transform_rotZ ").value);
+
+        scale = document.getElementById("emitUpdate_transform_scale ").value == " " ? 1 : parseFloat(document.getElementById("emitUpdate_transform_scale ").value);
+        emitUpdate();
+    }
+
+    /*
+     * ===== Convenience functions
+     */
+
+    // Resets given object to origin with scale 1
+    function resetToOrigin() {
+        xPos = 0;
+        yPos = 0;
+        zPos = 0;
+        xRot = 0;
+        yRot = 0;
+        zRot = 0;
+        scale = 1;
+
+        modelId = document.getElementById("emitUpdate_modelId").value;
+
+        emitUpdate();
+    }
+
+    // Assembles data and emits event to socket
+    function emitUpdate() {
+
+        // Assemble position object
+        let position = {
+            x: xPos,
+            y: yPos,
+            z: zPos
+        }
+
+        // Assemble rotation object
+        let rotation = {
+            x: xRot,
+            y: yRot,
+            z: zRot
+        }
+
+        // Assemble transform object
+        let transform = {
+            position,
+            rotation,
+            scale
+        };
+
+        // Prepare event payload
+        transform = JSON.stringify(transform);
+        let data = {
+            modelId,
+            transform
+        }
+
+        // Emit socket event
+        socket.emit('update', data);
+    }
+
+    // Updates automatic updates user settings
+    function updateUserSettings() {
+        // Get smooth or random
+        var radios = document.getElementsByName('animationStyle');
+        chosenRadio = null;
+        for (var i = 0, length = radios.length; i < length; i++) {
+            if (radios[i].checked) {
+                chosenRadio = radios[i].value;
+                break;
+            }
+        }
+
+        // Error if neither are chosen
+        if (!chosenRadio) {
+            emitError("Must choose an animation style");
+        }
+
+        // Update transform property booleans
+        updatePos = document.getElementById("positionCB").checked;
+        updateRot = document.getElementById("rotationCB").checked;
+        updateScale = document.getElementById("scaleCB").checked;
+
+        // Calculate updates/second
+        let updatesPerSecond = document.getElementById("updatesPerSecond").value;
+        updateIntervalSeconds = 1000 / updatesPerSecond;
+
+        let docStepSize = parseFloat(document.getElementById("stepSize").value);
+        if (docStepSize != stepSize) {
+            looper = 0;
+            stepSize = docStepSize;
+        }
+    }
+
+    // Error message functions
+
+    function emitError(msg) {
+        console.log(msg);
+        document.getElementById("emitError").style.visibility = "";
+        document.getElementById("errorMsg").innerHTML = msg;
+    }
+
+    function clearError() {
+        document.getElementById("emitError").style.visibility = "hidden";
+        document.getElementById("errorMsg").innerHTML = "";
     }
 
     </script>

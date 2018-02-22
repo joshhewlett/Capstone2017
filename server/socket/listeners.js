@@ -1,4 +1,6 @@
 // import emitters from './emitters';
+import logging from '../helpers/logging.helper';
+const logger = logging();
 
 function update(data) {
     _log("Update", data);
@@ -16,9 +18,9 @@ function slideChange(data) {
 
 function _log(msg, data) {
     if (data != null) {
-        console.log("=== Listeners - " + msg + ": " + data);
+        logger.info("=== Listeners - " + msg + ": ", data);
     } else {
-        console.log("=== Listeners - " + msg);
+        logger.info("=== Listeners - " + msg);
     }
 }
 
