@@ -210,9 +210,14 @@ export default class extends BaseController {
 
             plainSlide.models = [];
             for (let model of models) {
-                plainSlide.models.push(model.get({
-                    plain: true
-                }));
+                let trans = JSON.parse(model.transform);
+                plainSlide.models.push({
+                    id: model.id,
+                    poly_id: model.poly_id,
+                    transform: trans,
+                    created_at: model.created_at,
+                    updated_at: model.updated_at
+                });
             }
             data.presentation.slides.push(plainSlide);
 
