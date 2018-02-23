@@ -32,6 +32,7 @@
         "path": "^0.12.7",
         "promise-mysql": "^3.1.1",
         "sequelize": "^4.23.2",
+        "socketio": "^1.0.0",
         "winston": "^2.4.0"
     },
     "devDependencies": {
