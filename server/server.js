@@ -3,6 +3,7 @@
  */
 import express from 'express';
 import http from 'http';
+import path from 'path';
 
 /**
  * Project imports
@@ -12,8 +13,7 @@ import models from './models';
 import db from './db';
 import config from './config';
 import middleware from './middleware';
-import socketIO from 'socket.io';
-import path from 'path';
+import socket from './socket';
 
 const logger = helpers.logging();
 
@@ -77,8 +77,11 @@ server.listen(port, () => {
     logger.info("Server listening on port ", port);
 });
 
-let io = new socketIO(server);
+/** 
+ * Start Socket.IO instance
+ */
+let io = socket.instance(server);
 io.on('connection', (client) => {
-    helpers.socket(client);
-    console.log("Hello");
+    helpers.socket(client, io);
+    logger.info("Client connected!");
 });
