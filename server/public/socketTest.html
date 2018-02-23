@@ -312,11 +312,15 @@
         };
 
         // Prepare event payload
-        transform = JSON.stringify(transform);
+        // transform = JSON.stringify(transform);
+        model = parseInt(document.getElementById("emitUpdate_modelId").value);
         let data = {
-            modelId,
-            transform
+            model: model,
+            position,
+            rotation,
+            scale
         }
+        //data = JSON.stringify(data);
 
         // Emit socket event
         socket.emit('update', data);
