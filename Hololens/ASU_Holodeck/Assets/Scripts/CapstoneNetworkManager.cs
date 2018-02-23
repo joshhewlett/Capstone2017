@@ -49,6 +49,11 @@ public class CapstoneNetworkManager : MonoBehaviour {
                 Debug.Log("Network Retval Value: \t" + retval);
                 break;
             case RequestTypes.Save_Project:
+                //TODO: Put the proper endpoint here to save the presentation
+                string saveArea = serverTarget + "/presentation/" + data + "/all";
+
+                client = UnityWebRequest.Put(saveArea);
+                StartCoroutine(GetDataResults());
                 break;
             case RequestTypes.Retrieve_Poly:
                 break;

@@ -52,7 +52,8 @@ public class CapstoneSlideManager : MonoBehaviour {
      * Take in instantiated presentaiton object, assign json string for 
      * parsing via SimpleJSON, this creates full data dependency.
      * 
-     * @param presObj - Instantiated presentation session object, presJSON - Retrieved JSON from presentation/all endpoint.
+     * @param presObj - Instantiated presentation session object
+     * @param presJSON - Retrieved JSON from presentation/all endpoint.
      */ 
     public void ParsePresentationJSON(PresentationInfo presObj, string presJSON) {
         var presentationJSON = SimpleJSON.JSON.Parse(presJSON);
@@ -105,8 +106,49 @@ public class CapstoneSlideManager : MonoBehaviour {
             Debug.Log("Error Loading Slide: Current Project Object not Initialized");
         }
     }
+    
+    void PresentationToJSON(PresentationInfo presObj, string presJSON)
+    {
+        JSONClass presJSON = new JSONClass();
+        JSONArray slidesJSON = new JSONArray();
 
-    //TODO: Determine how to grab all information and save
+        presJSON.Add("id", currentPresentation.id);
+        presJSON.Add("name", currentPresentation.name);
+        presJSON.Add("description", currentPresentation.description);
+        presJSON.Add("is_live", currentPresentation.is_live);
+        presJSON.Add("user_id", currentPresentation.user_id);
+        presJSON.Add("slides", slidesJSON);
+        presJSON.Add("createdAt", currentPresentation.createdAt);
+        presJSON.Add("updatedAt"); //TODO: Determine how to get current time);
+        for (int i = 0; i < currentPresentation.slides.Length; ++i)
+        {
+            JSONClass curSlide = new JSONClass();
+            JSONArray modelsJSON = new JSONArray();
+            curSlide.Add("id", currentPresentation.slides[i].id);
+            curSlide.Add("sequence", currentPresentation.slides[i].sequence);
+            curSlide.Add("createdAt", currentPresentation.slides[i].createdAt);
+            curSlide.Add("updatedAt"); //TODO: Determine how to get current time);
+            curSlide.Add("presentation_id", currentPresentation.slides[i].presentation_id);
+
+            for (int j = 0; j < currentPresentation.slides[i].models.Length; ++j)
+            {
+                JSONClass curModel = new JSONClass();
+                curModel.Add("id", currentPresentation.slides[i].models[j].id);
+                curModel.Add("poly_id", currentPresentation.slides[i].models[j].poly_id);
+                curModel.Add("transform", currentPresentation.slides[i].models[j].transform);
+                curModel.Add("created_at", currentPresentation.slides[i].models[j].created_at);
+                curModel.Add("updated_at", currentPresentation.slides[i].models[j].updated_at);
+                curModel.Add("slide_id", currentPresentation.slides[i].models[j].slide_id);
+                modelsJSON.Add(curModel);
+            }
+            curSlide.Add("models", modelsJSON);
+            slidesJSON.Add(curSlide);
+        }
+        //TODO:
+        Debug.Log("Determine how to print out the JSON string");
+    }
+
+    //TODO: Verify that when objects are instantiated, they are loaded into presentation manager objects
     void SavePresentation() {
 
     }
