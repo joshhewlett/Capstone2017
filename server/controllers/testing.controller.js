@@ -1,5 +1,6 @@
 import BaseController from './base.controller';
 import path from 'path';
+import ax from 'axios';
 
 export default class extends BaseController {
     constructor(app) {
@@ -15,6 +16,10 @@ export default class extends BaseController {
             this.getSocketPage(req, res);
         });
 
+        this.router.get('/asset/:id', (req, res) => {
+            this.getPolyAsset(req, res);
+        })
+
     }
 
     async getMainPage(req, res) {
@@ -24,6 +29,13 @@ export default class extends BaseController {
 
     async getSocketPage(req, res) {
         res.sendFile(this.staticDir + 'socketTest.html');
+    }
+
+    async getPolyAsset(req, res) {
+
+        ax.get("https://poly.googleapis.com/v1/assets/" + req.params.id + "?key=AIzaSyAQrOikhKk6HZLYc61FoOIrVdhtkXr9ltU").then(result => {
+            res.send(result.data);
+        });
     }
 
 }

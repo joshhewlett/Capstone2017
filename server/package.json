@@ -16,6 +16,7 @@
     "dependencies": {
         "@std/esm": "^0.14.0",
         "aws-sdk": "^2.149.0",
+        "axios": "^0.18.0",
         "body-parser": "^1.18.2",
         "compression": "^1.7.1",
         "cookie": "^0.3.1",
