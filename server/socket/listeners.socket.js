@@ -24,6 +24,13 @@ function update(data) {
 // Sends a new slide event
 function slideChange(data) {
     _log("Slide Change", data);
+    Slide.findById(data).then(res => {
+        console.log(res);
+        emit.slideChange(data);
+    }).catch(err => {
+        logger.error("Error retrieving slide from db with id of " + data);
+        logger.error(err);
+    })
 }
 
 // Starts a live presentation
@@ -66,6 +73,7 @@ function presentationEnd(data) {
         logger.error(err);
     });
 }
+
 
 
 // Convenience function for logging with Logger

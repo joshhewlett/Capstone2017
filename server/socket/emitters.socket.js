@@ -22,6 +22,12 @@ function presentationEnd(id) {
     io().sockets.emit(emit.presentationEnd, id);
 }
 
+// Sends a slide_change event
+function slideChange(id) {
+    _log("Slide change to id of", id);
+    io().sockets.emit(emit.slideChange, id);
+}
+
 // Convenience function for logging with Logger
 function _log(msg, data) {
     if (data != null) {
@@ -30,6 +36,7 @@ function _log(msg, data) {
         logger.info("=== Emitters - " + msg);
     }
 }
+
 
 /* 
  * Defines emitters
@@ -40,5 +47,6 @@ function _log(msg, data) {
 export default {
     transform_update: update,
     presentationStart: presentationStart,
-    presentationEnd: presentationEnd
+    presentationEnd: presentationEnd,
+    slideChange: slideChange
 }

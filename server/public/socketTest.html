@@ -98,14 +98,24 @@
 
         </div>
 
-        <!-- Start presentation -->
+        <!-- Start and End presentation -->
         <div id="startDiv" style="width:100%; display: block;">
-            <h3 style="color:blue ">--- start_presentation ---</h3>
+            <h3 style="color:blue ">--- presentation_start and  presentation_end ---</h3>
             <p style="display: inline-block; width:100%;">
                 Choose presentation id:
                 <input id="emitStart_presentationId" type="number " style="width: 100px; " placeholder="presentation id ">
                 <input type="button" value="Start presentation" onclick="startPresentation()">
                 <input type="button" value="End presentation" onclick="endPresentation()">
+            </p>
+        </div>
+
+        <!-- Slide Change -->
+        <div id="slideChangeDiv" style="width:100%; display: block;">
+            <h3 style="color:blue ">--- slide changed ---</h3>
+            <p style="display: inline-block; width:100%;">
+                Choose Slide id:
+                <input id="emitSlide_changeId" type="number " style="width: 100px; " placeholder="slide id ">
+                <input type="button" value="Change slide" onclick="slideChange()">
             </p>
         </div>
 
@@ -383,6 +393,15 @@
         let id = document.getElementById("emitStart_presentationId").value;
         console.log(id);
         socket.emit('presentation_end', id);
+    }
+
+    /** 
+     * Slide Change
+     */
+    function slideChange() {
+        let id = document.getElementById("emitSlide_changeId").value;
+        console.log(id);
+        socket.emit('slide_change', id);
     }
 
     // Error message functions
