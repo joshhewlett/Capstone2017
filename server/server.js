@@ -29,7 +29,6 @@ app.db = db;
 app.config = config;
 app.middleware = middleware;
 
-
 app.use(express.static(path.resolve() + '/node_modules'));
 app.get("/", (req, res) => {
     res.send("Welcome to [HoloDeck]");
@@ -68,6 +67,7 @@ app.use((err, req, res, next) => {
 
     res.status(500).send(err);
 })
+
 /**
  * Start HTTP Server
  */

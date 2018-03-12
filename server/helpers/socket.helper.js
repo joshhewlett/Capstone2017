@@ -17,4 +17,8 @@ export default (client) => {
     client.on(on.presentationStart, (data) => {
         socket.on.presentationStart(data);
     });
+
+    client.on(on.presentationEnd, (data) => {
+        socket.on.presentationEnd(data);
+    })
 }

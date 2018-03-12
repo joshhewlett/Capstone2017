@@ -30,11 +30,11 @@
             <button onclick=" clearError(); ">Clear error</button>
         </p>
         <hr>
-        <h3 style="color:blue ">--- Update ---</h3>
+        <h3 style="color:blue ">--- transform_update ---</h3>
 
-        <div id="updateDiv">
+        <div id="updateDiv" style="width: 100%; display: block;">
 
-            <p style="display: inline-block; width:100%;">
+            <p style="width:100%;">
                 Choose model id:
                 <input id="emitUpdate_modelId" type="number " style="width: 50px; " placeholder="model id ">
 
@@ -58,7 +58,7 @@
                     <button onclick="resetToOrigin();">Reset object to origin</button>
                 </p>
 
-                <p style="display: inline; float:left;">
+                <p style="display: inline;">
                     <strong style="font-size: 25px; ">Automatic</strong>
                     <br>
                     <!-- Animation style -->
@@ -96,6 +96,17 @@
             <br>
 
 
+        </div>
+
+        <!-- Start presentation -->
+        <div id="startDiv" style="width:100%; display: block;">
+            <h3 style="color:blue ">--- start_presentation ---</h3>
+            <p style="display: inline-block; width:100%;">
+                Choose presentation id:
+                <input id="emitStart_presentationId" type="number " style="width: 100px; " placeholder="presentation id ">
+                <input type="button" value="Start presentation" onclick="startPresentation()">
+                <input type="button" value="End presentation" onclick="endPresentation()">
+            </p>
         </div>
 
     </div>
@@ -357,6 +368,21 @@
             looper = 0;
             stepSize = docStepSize;
         }
+    }
+
+    /** 
+     * Start/End presentation
+     */
+    function startPresentation() {
+        let id = document.getElementById("emitStart_presentationId").value;
+        console.log(id);
+        socket.emit('presentation_start', id);
+    }
+
+    function endPresentation() {
+        let id = document.getElementById("emitStart_presentationId").value;
+        console.log(id);
+        socket.emit('presentation_end', id);
     }
 
     // Error message functions
