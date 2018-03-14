@@ -24,7 +24,14 @@ public class StateManager : MonoBehaviour {
 
 	public void initialize(){
 		Debug.Log("Got all models");
-        addModelsFromSlide(0);
+
+        int slideId = -1;
+        foreach(SlideObject slide in ApplicationModel.presentation.slides){
+            if (slide.sequence == 0){
+                slideId = slide.id;
+            }
+        }
+        addModelsFromSlide(slideId);
 
         SocketController socketController = new SocketController();
         socketController.getInstance();
@@ -42,16 +49,20 @@ public class StateManager : MonoBehaviour {
         socketController.addPresentationEndListener((object[] args) => {
             // Remove all models from scene (maybe not necessary?)
             removeAllModels();
+            ApplicationModel.reset();
             // Destroy socket instance
             // Use scene controller to go back to main screen
             SceneManager.LoadScene("PresentationIDInput");
             socketController.disconnect();
+            haveInitialized = false;
         });
 
         socketController.addSlideChangedListener((object[] args) => {
             // TODO Parse event data
             // TODO Get new slide number
-            int slideNum = 0;
+            object slideNumObj = args[0];
+            string slideNumStr = (string)slideNumObj;
+            int slideNum = int.Parse(slideNumStr);
 
             // Remove all models
             removeAllModels();
@@ -62,29 +73,33 @@ public class StateManager : MonoBehaviour {
 	}
 
     public void addModelsFromSlide(int slideNum){
-        ModelObject[] models = ApplicationModel.presentation.slides[slideNum].models;
+        ModelObject[] models = null;
+        foreach (SlideObject slide in ApplicationModel.presentation.slides){
+            if (slide.id == slideNum){
+                models = slide.models;
+            }
+        }
 
+        if(models == null){
+            return;
+        }
         List<string> keyList = new List<string>(ApplicationModel.polyObjects.Keys);
         string[] keys = keyList.ToArray();
 
 
-        foreach (ModelObject model in models)
-        {
-            if (model.id == 1)
-            {
-                GameObject go;
-                bool success = ApplicationModel.polyObjects.TryGetValue("assets/" + model.poly_id, out go);
+        foreach (ModelObject model in models){
+            GameObject go;
+            bool success = ApplicationModel.polyObjects.TryGetValue("assets/" + model.poly_id, out go);
 
-                if (success)
-                {
-                    GameObject newGo = Instantiate(go);
-                    newGo.transform.parent = gameObject.transform;
-                    newGo.transform.localPosition = model.position;
-                    newGo.transform.localEulerAngles = model.rotation;
-                    newGo.transform.localScale = model.scale;
-                    newGo.name = model.id + "";
-                    newGo.SetActive(true);
-                }
+            if (success)
+            {
+                GameObject newGo = Instantiate(go);
+                newGo.transform.parent = gameObject.transform;
+                newGo.transform.localPosition = model.position;
+                newGo.transform.localEulerAngles = model.rotation;
+                newGo.transform.localScale = model.scale;
+                newGo.name = model.id + "";
+                newGo.SetActive(true);
             }
         }
     }
