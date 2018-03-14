@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using UnityEngine.SceneManagement;
 
 public class StateManager : MonoBehaviour {
 
@@ -23,26 +24,7 @@ public class StateManager : MonoBehaviour {
 
 	public void initialize(){
 		Debug.Log("Got all models");
-		ModelObject[] models = ApplicationModel.presentation.slides[0].models;
-
-        List<string> keyList = new List<string>(ApplicationModel.polyObjects.Keys);
-        string[] keys = keyList.ToArray();
-
-
-		foreach(ModelObject model in models){
-			GameObject go;
-			bool success = ApplicationModel.polyObjects.TryGetValue("assets/" + model.poly_id, out go);
-			
-			if (success){
-                GameObject newGo = Instantiate(go);
-				newGo.transform.parent = gameObject.transform;
-                newGo.transform.localPosition = model.position;
-                newGo.transform.localEulerAngles = model.rotation;
-                newGo.transform.localScale = model.scale;
-                newGo.name = model.id + "";
-				newGo.SetActive(true);
-			}
-		}
+        addModelsFromSlide(0);
 
         SocketController socketController = new SocketController();
         socketController.getInstance();
@@ -56,5 +38,62 @@ public class StateManager : MonoBehaviour {
                 go.transform.localScale = modelTransform.Scale;
             }
         });
+
+        socketController.addPresentationEndListener((object[] args) => {
+            // Remove all models from scene (maybe not necessary?)
+            removeAllModels();
+            // Destroy socket instance
+            // Use scene controller to go back to main screen
+            SceneManager.LoadScene("PresentationIDInput");
+            socketController.disconnect();
+        });
+
+        socketController.addSlideChangedListener((object[] args) => {
+            // TODO Parse event data
+            // TODO Get new slide number
+            int slideNum = 0;
+
+            // Remove all models
+            removeAllModels();
+
+            // Add all new slide models
+            addModelsFromSlide(slideNum);
+        });
 	}
+
+    public void addModelsFromSlide(int slideNum){
+        ModelObject[] models = ApplicationModel.presentation.slides[slideNum].models;
+
+        List<string> keyList = new List<string>(ApplicationModel.polyObjects.Keys);
+        string[] keys = keyList.ToArray();
+
+
+        foreach (ModelObject model in models)
+        {
+            if (model.id == 1)
+            {
+                GameObject go;
+                bool success = ApplicationModel.polyObjects.TryGetValue("assets/" + model.poly_id, out go);
+
+                if (success)
+                {
+                    GameObject newGo = Instantiate(go);
+                    newGo.transform.parent = gameObject.transform;
+                    newGo.transform.localPosition = model.position;
+                    newGo.transform.localEulerAngles = model.rotation;
+                    newGo.transform.localScale = model.scale;
+                    newGo.name = model.id + "";
+                    newGo.SetActive(true);
+                }
+            }
+        }
+    }
+
+    public void removeAllModels() {
+        foreach (Transform child in transform)
+        {
+            GameObject childGameObject = child.gameObject;
+            Destroy(childGameObject);
+        }
+    }
 }
