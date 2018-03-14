@@ -29,6 +29,29 @@
             <span id="errorMsg"></span>
             <button onclick=" clearError(); ">Clear error</button>
         </p>
+
+        <div>
+            <h3 style="color:dimgray">Data information:</h3>
+            <span>Choose presentation id:</span>
+            <input id="mainPresentation_id" type="number" style="width: 100px; " placeholder="presentation id" onkeyup="getPresentationSlides(this)">
+
+
+            <div style="inline-block">
+                <span>Presentation slides:
+                    <ul name="mainSlideIds" id="mainSlideIds" style="display: inline"></ul>
+                </span>
+            </div>
+
+            <div style="inline-block">
+                <span>Slide models:
+                    <ul name="slideModelIds" id="slideModelIds" style="display: inline"></ul>
+                </span>
+            </div>
+
+            <br>
+            <p>Current slide id: <span id="slideIdIndicator"></span> </p>
+        </div>
+
         <hr>
         <h3 style="color:blue ">--- transform_update ---</h3>
 
@@ -102,8 +125,6 @@
         <div id="startDiv" style="width:100%; display: block;">
             <h3 style="color:blue ">--- presentation_start and  presentation_end ---</h3>
             <p style="display: inline-block; width:100%;">
-                Choose presentation id:
-                <input id="emitStart_presentationId" type="number " style="width: 100px; " placeholder="presentation id ">
                 <input type="button" value="Start presentation" onclick="startPresentation()">
                 <input type="button" value="End presentation" onclick="endPresentation()">
             </p>
@@ -156,6 +177,86 @@
     // Radio value for animation style
     let chosenRadio = null;
 
+    /**
+     * Main State control
+     */
+    let STATE = null;
+    getPresentationSlides(document.getElementById("mainPresentation_id"));
+
+    function getPresentationSlides(presId) {
+        console.log(presId.value);
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+                console.log(this.responseText);
+                parseResponseData(this.responseText);
+            }
+        };
+        let url = '/presentation/' + presId.value + '/all';
+        xhttp.open("GET", url, true);
+        xhttp.send();
+    }
+
+    function parseResponseData(data) {
+        clearChildren(document.getElementById("mainSlideIds"));
+        data = JSON.parse(data);
+
+        console.log(data);
+        STATE = data.presentation;
+
+        let slideUL = document.getElementById("mainSlideIds");
+        for (let slide of STATE.slides) {
+            let newLI = document.createElement("li");
+            let button = document.createElement("input");
+
+            button.type = "button";
+            button.value = slide.id;
+            button.setAttribute("onclick", "getSlideModels(this);");
+
+            newLI.style.marginRight = "2%";
+            newLI.style.display = "inline";
+
+            newLI.appendChild(button);
+            slideUL.appendChild(newLI);
+        }
+        document.getElementById("slideIdIndicator").innerHTML = STATE.slides[0].id;
+    }
+
+    function getSlideModels(slideId) {
+        clearChildren(document.getElementById("slideModelIds"));
+        console.log(slideId);
+        slideId = slideId.value;
+
+        let slideObj = null;
+        for (let slide of STATE.slides) {
+            if (slide.id == slideId) {
+                slideObj = slide;
+                break;
+            }
+        }
+
+        let modelUL = document.getElementById("slideModelIds");
+        for (let model of slideObj.models) {
+            let newLI = document.createElement("li");
+            let button = document.createElement("input");
+
+            button.type = "button";
+            button.value = model.id;
+            button.onclick = "getModel(this);";
+
+            newLI.style.marginRight = "2%";
+            newLI.style.display = "inline";
+
+            newLI.appendChild(button);
+            modelUL.appendChild(newLI);
+        }
+    }
+
+    function clearChildren(htmlElement) {
+        while (htmlElement.firstChild) {
+            htmlElement.removeChild(htmlElement.firstChild);
+        }
+    }
 
     /*
      * ===== Automatic updating functions =====
@@ -384,15 +485,11 @@
      * Start/End presentation
      */
     function startPresentation() {
-        let id = document.getElementById("emitStart_presentationId").value;
-        console.log(id);
-        socket.emit('presentation_start', id);
+        socket.emit('presentation_start', STATE.id);
     }
 
     function endPresentation() {
-        let id = document.getElementById("emitStart_presentationId").value;
-        console.log(id);
-        socket.emit('presentation_end', id);
+        socket.emit('presentation_end', STATE.id);
     }
 
     /** 
@@ -401,6 +498,7 @@
     function slideChange() {
         let id = document.getElementById("emitSlide_changeId").value;
         console.log(id);
+        document.getElementById("slideIdIndicator").innerHTML = id;
         socket.emit('slide_change', id);
     }
 
