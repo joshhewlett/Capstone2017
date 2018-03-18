@@ -10,12 +10,25 @@ var Presentation = models.presentation;
 var Slide = models.slide;
 var SlideModel = models.slide_model;
 
+let currentPresentation = {};
 
 
 // Listens to 'update' socket event
 // Sends update event to a presentation model
 function update(data) {
     _log("Update", data);
+
+    for (let slide of currentPresentation.slides) {
+        for (let model of slide.models) {
+            if (model.id = data.model) {
+                model.transform = {
+                    position: data.position,
+                    rotation: data.rotation,
+                    scale: data.scale
+                };
+            }
+        }
+    }
     // _log("IO object:", io);
     emit.transform_update(data);
     // emit('TRANSFORM_UPDATE', data);
@@ -26,7 +39,21 @@ function slideChange(data) {
     _log("Slide Change", data);
     Slide.findById(data).then(res => {
         console.log(res);
+
         emit.slideChange(data);
+        currentPresentation.currentSlide = parseInt(data);
+        for (let slide of currentPresentation.slides) {
+            if (slide.id === data) {
+                for (let model of slide.models) {
+                    emit.transform_update({
+                        model: parseInt(data),
+                        position: model.transform.position,
+                        rotation: model.transform.rotation,
+                        scale: model.transform.scale
+                    });
+                }
+            }
+        }
     }).catch(err => {
         logger.error("Error retrieving slide from db with id of " + data);
         logger.error(err);
@@ -45,6 +72,12 @@ function presentationStart(data) {
         if (!res.is_live) {
             res.is_live = true;
             res.save();
+
+            getAllPresentationData(res.id).then((allData) => {
+                currentPresentation = allData.presentation;
+                currentPresentation.currentSlide = allData.presentation.slides[0].id;
+            });
+
             emit.presentationStart(data);
             _log("Presentation now live");
         }
@@ -65,6 +98,7 @@ function presentationEnd(data) {
         if (res.is_live) {
             res.is_live = false;
             res.save();
+            currentPresentation = {};
             emit.presentationEnd(data);
             _log("Presentation no longer live")
         }
@@ -83,6 +117,49 @@ function _log(msg, data) {
     } else {
         logger.info("=== Listeners - " + msg);
     }
+}
+
+
+async function getAllPresentationData(id) {
+    let presentation = await Presentation.findById(id).catch((err) => {
+        this.handleError(next, "Failed to retrieve presentation");
+    });
+
+    let slides = await presentation.getSlides();
+
+    // Prepare response payload
+    let data = {};
+    data.presentation = {};
+    data.presentation.id = presentation.id;
+    data.presentation.name = presentation.name;
+    data.presentation.description = presentation.description;
+    data.presentation.is_live = presentation.is_live;
+    data.presentation.user_id = presentation.user_id;
+    data.presentation.slides = [];
+
+    // Get slide models for each slide
+    for (let slide of slides) {
+        let models = await slide.getModels();
+        let plainSlide = slide.get({
+            plain: true
+        });
+
+        plainSlide.models = [];
+        for (let model of models) {
+            let trans = JSON.parse(model.transform);
+            plainSlide.models.push({
+                id: model.id,
+                poly_id: model.poly_id,
+                transform: trans,
+                created_at: model.created_at,
+                updated_at: model.updated_at
+            });
+        }
+        data.presentation.slides.push(plainSlide);
+
+    }
+
+    return data;
 }
 
 /*
