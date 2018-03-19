@@ -11,12 +11,23 @@ public class TestPresentationId : MonoBehaviour {
 
 	static int numPolyObjects = 0;
 	static Timer aTimer;
+	static GameObject iOSLoader = null;
+	static bool shouldLoadNextScene = false;
 
 	// Use this for initialization
 	void Start () {
 		Debug.Log("IN NEW SCENE WITH ID: " + ApplicationModel.presentationId);
 
+		GameObject canvas = GameObject.Find("Canvas");
+		iOSLoader = canvas.transform.GetChild(4).gameObject;
+
 		StartCoroutine(GetPresentationObject());
+	}
+
+	void Update() {
+		if(shouldLoadNextScene) {
+			SceneManager.LoadScene("iOS_Holo");
+		}
 	}
 
 	/*
@@ -56,10 +67,11 @@ public class TestPresentationId : MonoBehaviour {
 				pres.is_live = false;
 			}
 
+
 			if (!pres.is_live){
 				// Presentation isn't live.
 				// return to main screen. Show some kind of error?
-				SceneManager.LoadScene("PresentationIDInput");
+				SceneManager.LoadScene("ErrorPage");
 				yield return null;
 			}
 
@@ -138,8 +150,10 @@ public class TestPresentationId : MonoBehaviour {
 			aTimer.Stop();
        		aTimer.Dispose();
 			ApplicationModel.loadedModels = true;
+			shouldLoadNextScene = true;
 		}
     }
+
 
 	// Get Poly Asset for each model in Presentation
 	void CreatePolyObjects(ArrayList polyIds){
@@ -174,7 +188,6 @@ public class TestPresentationId : MonoBehaviour {
 		 */
 
 		result.Value.gameObject.SetActive(false);
-		result.Value.gameObject.AddComponent<Rotate>();
 		result.Value.gameObject.AddComponent<BoxCollider>();
 		result.Value.gameObject.AddComponent<InteractableObject>();
 		// Turn off the bool for all interactable objects.

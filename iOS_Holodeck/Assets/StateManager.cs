@@ -24,6 +24,9 @@ public class StateManager : MonoBehaviour {
 
 	public void initialize(){
 		Debug.Log("Got all models");
+        foreach (KeyValuePair<string, GameObject> g in ApplicationModel.polyObjects){
+            Debug.Log(g.Value);
+        }
 
         int slideId = -1;
         foreach(SlideObject slide in ApplicationModel.presentation.slides){
