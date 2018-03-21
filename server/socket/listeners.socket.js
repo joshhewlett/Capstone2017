@@ -1,6 +1,7 @@
 import models from '../models';
 import emit from './emitters.socket';
 import logging from '../helpers/logging.helper';
+import events from './events';
 
 const logger = logging();
 
@@ -13,19 +14,41 @@ var SlideModel = models.slide_model;
 let currentPresentation = {};
 
 
+function connect(socket) {
+    if (currentPresentation.currentSlide) {
+        console.log("Emitting current slide");
+        socket.emit(events.emit.slideChange, currentPresentation.currentSlide + "");
+        for (let slide of currentPresentation.slides) {
+            if (slide.id === currentPresentation.currentSlide) {
+                for (let model of slide.models) {
+                    console.log("Emitting update for model on connect");
+                    socket.emit(events.emit.update, {
+                        model: currentPresentation.currentSlide,
+                        position: model.transform.position,
+                        rotation: model.transform.rotation,
+                        scale: model.transform.scale
+                    });
+                }
+            }
+        }
+    }
+}
+
 // Listens to 'update' socket event
 // Sends update event to a presentation model
 function update(data) {
     _log("Update", data);
 
-    for (let slide of currentPresentation.slides) {
-        for (let model of slide.models) {
-            if (model.id = data.model) {
-                model.transform = {
-                    position: data.position,
-                    rotation: data.rotation,
-                    scale: data.scale
-                };
+    if (currentPresentation.slides) {
+        for (let slide of currentPresentation.slides) {
+            for (let model of slide.models) {
+                if (model.id = data.model) {
+                    model.transform = {
+                        position: data.position,
+                        rotation: data.rotation,
+                        scale: data.scale
+                    };
+                }
             }
         }
     }
@@ -42,22 +65,26 @@ function slideChange(data) {
 
         emit.slideChange(data);
         currentPresentation.currentSlide = parseInt(data);
-        for (let slide of currentPresentation.slides) {
-            if (slide.id === data) {
-                for (let model of slide.models) {
-                    emit.transform_update({
-                        model: parseInt(data),
-                        position: model.transform.position,
-                        rotation: model.transform.rotation,
-                        scale: model.transform.scale
-                    });
-                }
-            }
-        }
+        updateModelsForSlide(data);
     }).catch(err => {
         logger.error("Error retrieving slide from db with id of " + data);
         logger.error(err);
     })
+}
+
+function updateModelsForSlide(data) {
+    for (let slide of currentPresentation.slides) {
+        if (slide.id === data) {
+            for (let model of slide.models) {
+                emit.transform_update({
+                    model: parseInt(data),
+                    position: model.transform.position,
+                    rotation: model.transform.rotation,
+                    scale: model.transform.scale
+                });
+            }
+        }
+    }
 }
 
 // Starts a live presentation
@@ -172,5 +199,6 @@ export default {
     update: update,
     presentationStart: presentationStart,
     slideChange: slideChange,
-    presentationEnd: presentationEnd
+    presentationEnd: presentationEnd,
+    connect
 }

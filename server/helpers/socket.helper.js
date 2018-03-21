@@ -6,6 +6,9 @@ let on = socket.events.on;
  * and forwards them to our 'socket' module
  */
 export default (client) => {
+
+    socket.on.connect(client);
+
     client.on(on.update, (data) => {
         socket.on.update(data);
     });
