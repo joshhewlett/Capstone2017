@@ -21,11 +21,16 @@ public class TestPresentationId : MonoBehaviour {
 		GameObject canvas = GameObject.Find("Canvas");
 		iOSLoader = canvas.transform.GetChild(4).gameObject;
 
+		// GameObject go = GameObject.Find("ModelSingletonContainer");
+		// (ModelSingletonContainer) go.GetComponent<ModelSingletonContainer>().logObjects();
+		// modelContainer = (ModelSingletonContainer) go.GetComponent<ModelSingletonContainer>();
+
 		StartCoroutine(GetPresentationObject());
 	}
 
 	void Update() {
 		if(shouldLoadNextScene) {
+			// ModelSingletonContainer.copyObjects(ApplicationModel.polyObjects);
 			SceneManager.LoadScene("iOS_Holo");
 		}
 	}
@@ -208,6 +213,8 @@ public class TestPresentationId : MonoBehaviour {
 		// Finished importing allow user to select more models for importing.
 
 		// Add to ApplicationModel for global access
-		ApplicationModel.polyObjects.Add(asset.name, result.Value.gameObject);
+		var polyObj = Instantiate(result.Value.gameObject, new Vector3(), Quaternion.identity);
+		polyObj.transform.parent = ModelSingletonContainer.Instance.transform;
+		ApplicationModel.polyObjects.Add(asset.name, polyObj);
 	}
 }

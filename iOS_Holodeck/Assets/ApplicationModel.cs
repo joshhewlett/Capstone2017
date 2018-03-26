@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
-public class ApplicationModel  
+public static class ApplicationModel  
  {
     static public string presentationId = "";
     static public PresentationObject presentation = new PresentationObject();
