@@ -11,6 +11,10 @@ public class SocketController {
 	readonly string PRESENTATION_END = "PRESENTATION_END";
 	readonly string SOCKET_URL = "http://localhost:3000/socket.io/";
 
+	public static List<ModelTransform> slideTransitionTransformQueue = new List<ModelTransform>();
+	public static bool slideTransition = false;
+	public static int counter = 0;
+	
 
 	SocketManager socketManager;
 	List<Action<object[]>> transformUpdateActions = new List<Action<object[]>>();
