@@ -9,7 +9,10 @@ Temp/
 Library/
 iOS_Capstone/
 iOS_Holodeck/
-!iOS_Holodeck/Assets/*.cs
+!iOS_Holodeck/Assets/**/*.cs
+iOS_Holodeck/Assets/Vendor
+iOS_Holodeck/Assets/Poly
+iOS_Holodeck/Assets/PolyToolkit
 Hololens/
 !Hololens/ASU_Holodeck/Assets/*.cs
 !Hololens/ASU_Holodeck/Assets/Scripts/*
