@@ -3,5 +3,6 @@ export default {
     presentation: '/presentation',
     slide: '/slide',
     model: '/model',
-    testing: '/testing'
+    testing: '/testing',
+    proxy: '/proxy'
 }

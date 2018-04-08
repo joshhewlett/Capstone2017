@@ -11,5 +11,6 @@ export default (app) => {
     app.use(config.routing.slide, new controllers.SlideController(app).router);
     app.use(config.routing.model, new controllers.ModelController(app).router);
     app.use(config.routing.testing, new controllers.TestingController(app).router);
+    app.use(config.routing.proxy, new controllers.ProxyController(app).router);
     app.logger.debug("Routing Initialized");
 }
