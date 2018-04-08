@@ -42,15 +42,7 @@ public class StateManager : MonoBehaviour {
         socketController.getInstance();
 
         socketController.addTransformUpdateListener((object[] args) => {
-            Debug.Log("Transform count " + SocketController.counter++);
-            ModelTransform modelTransform = new ModelTransform(args);
-
-            if(SocketController.slideTransition){
-                Debug.Log("Adding update to queue!");
-                SocketController.slideTransitionTransformQueue.Add(modelTransform);
-                return;
-            }
-
+            TransformObject modelTransform = new TransformObject(args);
             GameObject go = GameObject.Find(modelTransform.Model);
             if (go != null){
                 go.transform.localPosition = modelTransform.Position;
@@ -71,11 +63,8 @@ public class StateManager : MonoBehaviour {
         });
 
         socketController.addSlideChangedListener((object[] args) => {
-            Debug.Log("Beginning transition count " + SocketController.counter++);
             // TODO Parse event data
-            // TODO Get new slide number;
-            SocketController.slideTransition = true;
-
+            // TODO Get new slide number
             object slideNumObj = args[0];
             string slideNumStr = (string)slideNumObj;
             int slideNum = int.Parse(slideNumStr);
@@ -85,20 +74,6 @@ public class StateManager : MonoBehaviour {
 
             // Add all new slide models
             addModelsFromSlide(slideNum);
-
-            foreach(ModelTransform modelTransform in SocketController.slideTransitionTransformQueue){
-                Debug.Log("Update for modelTransform");
-                GameObject go = GameObject.Find(modelTransform.Model);
-                if (go != null){
-                    go.transform.localPosition = modelTransform.Position;
-                    go.transform.localEulerAngles = modelTransform.Rotation;
-                    go.transform.localScale = modelTransform.Scale;
-                }
-
-            }
-            SocketController.slideTransitionTransformQueue.Clear();
-            SocketController.slideTransition = false;
-            Debug.Log("End transition count " + SocketController.counter++);
         });
 	}
 

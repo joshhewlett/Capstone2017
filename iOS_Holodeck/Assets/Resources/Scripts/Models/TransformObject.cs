@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
 
-public class ModelTransform
+public class TransformObject
 {
-    public ModelTransform(object[] args)
+    public TransformObject(object[] args)
     {
         Dictionary<string, object> dict = (Dictionary<string, object>)args[0];
 

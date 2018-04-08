@@ -19,12 +19,9 @@ public class InteractableObject : MonoBehaviour {
 				scale_analog,
 				touchTime;
 
-	private GameObject joystickRef;
-
 	// Use this for initialization
 	void Start () {
 		movementEnabled = rotationEnabled = newTouch = false;
-		joystickRef = gameObject.transform.parent.GetComponent<ARKitUserTapPlace> ().joystickReference;
 	}
 	
 	// Update is called once per frame
@@ -107,7 +104,6 @@ public class InteractableObject : MonoBehaviour {
 				if (touch.phase == TouchPhase.Began) {
 					movementEnabled = !movementEnabled;
 					// Enable joysticks by grabbing joystick reference from ARKit script.
-					joystickRef.SetActive (movementEnabled);
 				}
 			} else {
 //				// Turn off joystick and disable manipulation when selecting something else
@@ -117,7 +113,6 @@ public class InteractableObject : MonoBehaviour {
 //				if (touch.phase == TouchPhase.Began) {
 //					movementEnabled = false;
 //					// Enable joysticks by grabbing joystick reference from ARKit script.
-//					joystickRef.SetActive (false);
 //				}
 			}
 		}
