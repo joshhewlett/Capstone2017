@@ -53,6 +53,9 @@ function update(data) {
         }
     }
     // _log("IO object:", io);
+    if (typeof data === "string"){
+        data = JSON.parse(data);
+    }
     emit.transform_update(data);
     // emit('TRANSFORM_UPDATE', data);
 }
