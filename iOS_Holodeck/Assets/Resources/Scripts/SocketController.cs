@@ -9,7 +9,7 @@ public class SocketController {
 	readonly string TRANSFORM_UPDATE = "TRANSFORM_UPDATE";
 	readonly string SLIDE_CHANGED = "SLIDE_CHANGED";
 	readonly string PRESENTATION_END = "PRESENTATION_END";
-	readonly string SOCKET_URL = "http://localhost:3000/socket.io/";
+    readonly string SOCKET_URL = ApplicationModel.API_URL + "/socket.io/";
 
 
 	SocketManager socketManager;

@@ -40,7 +40,8 @@ public class TestPresentationId : MonoBehaviour {
 	 * the user input
 	 */
 	IEnumerator GetPresentationObject(){
-		UnityWebRequest presentationJson = UnityWebRequest.Get("http://capstone-679aea6d.207c8177.svc.dockerapp.io:3001/presentation/" + ApplicationModel.presentationId + "/all");
+        UnityWebRequest presentationJson = UnityWebRequest.Get(ApplicationModel.API_URL + "/presentation/" + ApplicationModel.presentationId + "/all");
+		//UnityWebRequest presentationJson = UnityWebRequest.Get("http://capstone-679aea6d.207c8177.svc.dockerapp.io:3001/presentation/" + ApplicationModel.presentationId + "/all");
 		// presentationJson.downloadHandler = new DownloadHandlerBuffer();
 		yield return presentationJson.SendWebRequest();
 
