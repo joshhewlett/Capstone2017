@@ -4,11 +4,13 @@ using UnityEngine;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using UnityEngine.SceneManagement;
+using UnityEngine.XR.iOS;
 
 public class StateManager : MonoBehaviour {
 
 	List<GameObject> gameObjects = new List<GameObject>();
 	bool haveInitialized = false;
+    public GameObject ar_scene;
 
 	public void Update() {
 		if (ApplicationModel.loadedModels && !haveInitialized){
@@ -98,18 +100,19 @@ public class StateManager : MonoBehaviour {
             if (success)
             {
                 GameObject newGo = Instantiate(go);
-                newGo.transform.parent = gameObject.transform;
+                newGo.transform.parent = ar_scene.transform;
                 newGo.transform.localPosition = model.position;
                 newGo.transform.localEulerAngles = model.rotation;
                 newGo.transform.localScale = model.scale;
                 newGo.name = model.id + "";
-                newGo.SetActive(true);
+                //newGo.SetActive(true);
             }
         }
+        ar_scene.GetComponent<UnityARHitTestExample>().SetARScene(false);
     }
 
     public void removeAllModels() {
-        foreach (Transform child in transform)
+        foreach (Transform child in ar_scene.transform)
         {
             GameObject childGameObject = child.gameObject;
             Destroy(childGameObject);
