@@ -195,9 +195,9 @@ public class TestPresentationId : MonoBehaviour {
 
 		result.Value.gameObject.SetActive(false);
 		result.Value.gameObject.AddComponent<BoxCollider>();
-		result.Value.gameObject.AddComponent<InteractableObject>();
+		//result.Value.gameObject.AddComponent<InteractableObject>();
 		// Turn off the bool for all interactable objects.
-		result.Value.gameObject.GetComponent<InteractableObject>().movementEnabled = false;
+		//result.Value.gameObject.GetComponent<InteractableObject>().movementEnabled = false;
 		result.Value.gameObject.AddComponent<Rigidbody>();
 		// Disable gravity, make kinematic, and allow for continuous collision detection so we 
 		// can alter the motion physics of the respective game object model.

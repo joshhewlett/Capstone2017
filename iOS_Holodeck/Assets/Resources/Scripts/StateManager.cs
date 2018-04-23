@@ -52,19 +52,18 @@ public class StateManager : MonoBehaviour {
         });
 
         socketController.addPresentationEndListener((object[] args) => {
+            Debug.Log("ENDING PRESENTATION");
             // Remove all models from scene (maybe not necessary?)
             removeAllModels();
             ApplicationModel.reset();
             // Destroy socket instance
             // Use scene controller to go back to main screen
-            SceneManager.LoadScene("PresentationIDInput");
             socketController.disconnect();
             haveInitialized = false;
+            SceneManager.LoadScene("PresentationIDInput");
         });
 
         socketController.addSlideChangedListener((object[] args) => {
-            // TODO Parse event data
-            // TODO Get new slide number
             object slideNumObj = args[0];
             string slideNumStr = (string)slideNumObj;
             int slideNum = int.Parse(slideNumStr);
