@@ -43,11 +43,13 @@ function update(data) {
         for (let slide of currentPresentation.slides) {
             for (let model of slide.models) {
                 if (model.id = data.model) {
+                    console.log("Model transform pre", currentPresentation.slides);
                     model.transform = {
                         position: data.position,
                         rotation: data.rotation,
                         scale: data.scale
                     };
+                    console.log("Model transform post", currentPresentation.slides);
                 }
             }
         }
