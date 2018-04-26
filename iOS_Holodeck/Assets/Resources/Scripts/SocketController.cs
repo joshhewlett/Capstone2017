@@ -18,6 +18,7 @@ public class SocketController {
 	List<Action<object[]>> presentationEndActions = new List<Action<object[]>>();
 	
 	public SocketManager getInstance() {
+        Debug.Log("Getting instance");
 		if (socketManager == null){
 			socketManager = new SocketManager(new Uri(SOCKET_URL));
 			setupSocketLisenters();
@@ -38,14 +39,17 @@ public class SocketController {
 	}
 
 	public void addTransformUpdateListener(Action<object[]> action){
+        Debug.Log("Added Transform update listener");
 		transformUpdateActions.Add(action);
 	}
 
     public void addSlideChangedListener(Action<object[]> action){
+        Debug.Log("Added Slide changed listener");
 		slideChangedActions.Add(action);
 	}
 
     public void addPresentationEndListener(Action<object[]> action) {
+        Debug.Log("Added presentation end listener");
 		presentationEndActions.Add(action);
 	}
 

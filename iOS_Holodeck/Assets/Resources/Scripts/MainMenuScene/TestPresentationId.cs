@@ -9,17 +9,16 @@ using System.Timers;
 
 public class TestPresentationId : MonoBehaviour {
 
-	static int numPolyObjects = 0;
-	static Timer aTimer;
 	static GameObject iOSLoader = null;
 	static bool shouldLoadNextScene = false;
 
 	// Use this for initialization
 	void Start () {
+		shouldLoadNextScene = false;
 		Debug.Log("IN NEW SCENE WITH ID: " + ApplicationModel.presentationId);
 
 		GameObject canvas = GameObject.Find("Canvas");
-		iOSLoader = canvas.transform.GetChild(4).gameObject;
+		iOSLoader = canvas.transform.GetChild(3).gameObject;
 
 		// GameObject go = GameObject.Find("ModelSingletonContainer");
 		// (ModelSingletonContainer) go.GetComponent<ModelSingletonContainer>().logObjects();
@@ -31,6 +30,8 @@ public class TestPresentationId : MonoBehaviour {
 	void Update() {
 		if(shouldLoadNextScene) {
 			// ModelSingletonContainer.copyObjects(ApplicationModel.polyObjects);
+			Debug.Log("Load iOS?");
+
 			SceneManager.LoadScene("iOS_Holo");
 		}
 	}
@@ -41,10 +42,10 @@ public class TestPresentationId : MonoBehaviour {
 	 */
 	IEnumerator GetPresentationObject(){
         UnityWebRequest presentationJson = UnityWebRequest.Get(ApplicationModel.API_URL + "/presentation/" + ApplicationModel.presentationId + "/all");
-		//UnityWebRequest presentationJson = UnityWebRequest.Get("http://capstone-679aea6d.207c8177.svc.dockerapp.io:3001/presentation/" + ApplicationModel.presentationId + "/all");
-		// presentationJson.downloadHandler = new DownloadHandlerBuffer();
+
 		yield return presentationJson.SendWebRequest();
 
+		// Deal with result of web request
 		if (presentationJson.isNetworkError || presentationJson.isHttpError){
 			// Log error if web request fails
 			Debug.Log("Error: " + presentationJson.error);
@@ -52,6 +53,7 @@ public class TestPresentationId : MonoBehaviour {
 			// Log JSON data returned from API call
 			Debug.Log("Successful data: " + presentationJson.downloadHandler.text);
 
+			// Create JSON object out of successful request
 			var jsonObj = SimpleJSON.JSON.Parse(presentationJson.downloadHandler.text);
 
 
@@ -63,37 +65,37 @@ public class TestPresentationId : MonoBehaviour {
 			// Create presentation object from JSON
 			PresentationObject pres = new PresentationObject();
 
+			// Set presentation id, name, description
 			pres.id = jsonObj["presentation"]["id"].AsInt;
 			pres.name = jsonObj["presentation"]["name"].Value;
 			pres.description = jsonObj["presentation"]["description"].Value;
 
+			// Get 'is_live' status
 			if(jsonObj["presentation"]["is_live"].Value == "True"){
 				pres.is_live = true;
 			} else {
 				pres.is_live = false;
 			}
 
-
 			if (!pres.is_live){
 				// Presentation isn't live.
-				// return to main screen. Show some kind of error?
+				// Send user to error page
 				SceneManager.LoadScene("ErrorPage");
 				yield return null;
 			}
 
+			// User id
 			pres.user_id = jsonObj["presentation"]["user_id"].AsInt;
 
 			// Create presentation slides from JSON
 			SlideObject[] slides = new SlideObject[jsonObj["presentation"]["slides"].Count];
 
-			// Array of unique Poly Object Ids to create Poly object models
-			// without creating duplicates
-			ArrayList polyIds = new ArrayList();
-
+			// Create slide and slide[i].models objects from request
 			for(int i = 0; i < slides.Length; i++){
 				SlideObject s = new SlideObject();
 				var slideJsonObj = jsonObj["presentation"]["slides"][i];
 
+				// Slide metainfo
 				s.id = slideJsonObj["id"].AsInt;
 				s.sequence = slideJsonObj["sequence"].AsInt;
 				s.presentation_id = slideJsonObj["presentation_id"].AsInt;
@@ -114,11 +116,6 @@ public class TestPresentationId : MonoBehaviour {
 					m.slide_id = modelJsonObj["slide_id"].AsInt;
 
 					models[j] = m;
-
-					// Add id to polyIds if unique
-					if(!polyIds.Contains(m.poly_id)){
-						polyIds.Add(m.poly_id);
-					}
 				}
 				s.models = models;
 
@@ -138,84 +135,90 @@ public class TestPresentationId : MonoBehaviour {
 			// Add newly created Presentation to the ApplicationModel for global access
 			// and create poly objects
 			ApplicationModel.presentation = pres;
-			CreatePolyObjects(polyIds);
-			numPolyObjects = polyIds.Count;
 
-			aTimer = new System.Timers.Timer(250);
-			aTimer.Elapsed += OnTimedEvent;
-			aTimer.AutoReset = true;
-			aTimer.Enabled = true;
+			Debug.Log("Should load!");
+
+			shouldLoadNextScene = true;
+			ApplicationModel.loadedModels = true;
+
+			// CreatePolyObjects(polyIds);
+			// numPolyObjects = polyIds.Count;
+
+			// aTimer = new System.Timers.Timer(250);
+			// aTimer.Elapsed += OnTimedEvent;
+			// aTimer.AutoReset = true;
+			// aTimer.Enabled = true;
 		}
 	}
 
-	private void OnTimedEvent(System.Object source, ElapsedEventArgs e){
-		int count = ApplicationModel.polyObjects.Count;
+	// private void OnTimedEvent(System.Object source, ElapsedEventArgs e){
+	// 	int count = ApplicationModel.polyObjects.Count;
 
-		Debug.Log("Current poly objects loaded: " + count);
-        if (ApplicationModel.polyObjects.Count == numPolyObjects){
-			aTimer.Stop();
-       		aTimer.Dispose();
-			ApplicationModel.loadedModels = true;
-			shouldLoadNextScene = true;
-		}
-    }
+	// 	Debug.Log("Current poly objects loaded: " + count);
+    //     if (ApplicationModel.polyObjects.Count == numPolyObjects){
+	// 		aTimer.Stop();
+    //    		aTimer.Dispose();
+	// 		ApplicationModel.loadedModels = true;
+	// 		shouldLoadNextScene = true;
+	// 	}
+    // }
 
 
 	// Get Poly Asset for each model in Presentation
-	void CreatePolyObjects(ArrayList polyIds){
-		foreach(String s in polyIds ){
-			string asset = "assets/" + s;
-			PolyApi.GetAsset(asset, GetAssetCallback);
-		}
-	}
+	// void CreatePolyObjects(ArrayList polyIds){
+	// 	foreach(String s in polyIds ){
+	// 		string asset = "assets/" + s;
+	// 		// PolyApi.GetAsset(asset, GetAssetCallback);
+	// 	}
+	// }
 
 	// Callback for GetAsset
 	// Use result to get Unity objects using Poly.Import
-	void GetAssetCallback(PolyStatusOr<PolyAsset> result){
-		if(!result.Ok){
-			Debug.Log("Error retrieving PolyAsset");
-			numPolyObjects--;
-			return;
-		}
+	// void GetAssetCallback(PolyStatusOr<PolyAsset> result){
+	// 	if(!result.Ok){
+	// 		Debug.Log("Error retrieving PolyAsset");
+	// 		numPolyObjects--;
+	// 		return;
+	// 	}
 
-		PolyApi.Import(result.Value, PolyImportOptions.Default(), ImportAssetCallback);
-	}
+	// 	// PolyApi.Import(result.Value, PolyImportOptions.Default(), ImportAssetCallback);
+	// }
 
 	// Callback for Import
 	// Process GameObject and add to ApplicationModel
-	void ImportAssetCallback(PolyAsset asset, PolyStatusOr<PolyImportResult> result){
-		if(!result.Ok){
-			Debug.Log("Error importing PolyAsset");
-			return;
-		}
+	// void ImportAssetCallback(PolyAsset asset, PolyStatusOr<PolyImportResult> result){
+	// 	if(!result.Ok){
+	// 		Debug.Log("Error importing PolyAsset");
+	// 		return;
+	// 	}
 
-		/*
-		 * Set all gameObject properties before creating prefab
-		 */
+	// 	/*
+	// 	 * Set all gameObject properties before creating prefab
+	// 	 */
 
-		result.Value.gameObject.SetActive(false);
-		result.Value.gameObject.AddComponent<BoxCollider>();
-		//result.Value.gameObject.AddComponent<InteractableObject>();
-		// Turn off the bool for all interactable objects.
-		//result.Value.gameObject.GetComponent<InteractableObject>().movementEnabled = false;
-		result.Value.gameObject.AddComponent<Rigidbody>();
-		// Disable gravity, make kinematic, and allow for continuous collision detection so we 
-		// can alter the motion physics of the respective game object model.
-		result.Value.gameObject.GetComponent<Rigidbody> ().useGravity = false;
-		result.Value.gameObject.GetComponent<Rigidbody> ().isKinematic = true;
-		result.Value.gameObject.GetComponent<Rigidbody> ().collisionDetectionMode = CollisionDetectionMode.Continuous;
-		// Add rigidbody
-		result.Value.gameObject.transform.parent = gameObject.transform.parent;
-		result.Value.gameObject.tag = "PolyImport";
-		result.Value.gameObject.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
-		// Move object instantiation away from previous spawn.
+	// 	result.Value.gameObject.SetActive(false);
+	// 	result.Value.gameObject.AddComponent<BoxCollider>();
+	// 	//result.Value.gameObject.AddComponent<InteractableObject>();
+	// 	// Turn off the bool for all interactable objects.
+	// 	//result.Value.gameObject.GetComponent<InteractableObject>().movementEnabled = false;
+	// 	result.Value.gameObject.AddComponent<Rigidbody>();
+	// 	// Disable gravity, make kinematic, and allow for continuous collision detection so we 
+	// 	// can alter the motion physics of the respective game object model.
+	// 	result.Value.gameObject.GetComponent<Rigidbody> ().useGravity = false;
+	// 	result.Value.gameObject.GetComponent<Rigidbody> ().isKinematic = true;
+	// 	result.Value.gameObject.GetComponent<Rigidbody> ().collisionDetectionMode = CollisionDetectionMode.Continuous;
+	// 	// Add rigidbody
+	// 	result.Value.gameObject.transform.parent = gameObject.transform.parent;
+	// 	result.Value.gameObject.tag = "PolyImport";
+	// 	result.Value.gameObject.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
+	// 	// Move object instantiation away from previous spawn.
 		
-		result.Value.gameObject.transform.localPosition = new Vector3(0f, 0f, 0f);
-		// Finished importing allow user to select more models for importing.
+	// 	result.Value.gameObject.transform.localPosition = new Vector3(0f, 0f, 0f);
+	// 	// Finished importing allow user to select more models for importing.
 
-		// Add to ApplicationModel for global access
-		var polyObj = Instantiate(result.Value.gameObject, new Vector3(), Quaternion.identity);
-		polyObj.transform.parent = ModelSingletonContainer.Instance.transform;
-		ApplicationModel.polyObjects.Add(asset.name, polyObj);
-	}
+	// 	// Add to ApplicationModel for global access
+	// 	var polyObj = Instantiate(result.Value.gameObject, new Vector3(), Quaternion.identity);
+	// 	polyObj.transform.parent = ModelSingletonContainer.Instance.transform;
+	// 	ApplicationModel.polyObjects.Add(asset.name, polyObj);
+	// }
 }

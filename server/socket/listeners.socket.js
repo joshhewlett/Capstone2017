@@ -23,7 +23,7 @@ function connect(socket) {
                 for (let model of slide.models) {
                     console.log("Emitting update for model on connect");
                     socket.emit(events.emit.update, {
-                        model: currentPresentation.currentSlide,
+                        model: model.id,
                         position: model.transform.position,
                         rotation: model.transform.rotation,
                         scale: model.transform.scale
@@ -53,7 +53,7 @@ function update(data) {
         }
     }
     // _log("IO object:", io);
-    if (typeof data === "string"){
+    if (typeof data === "string") {
         data = JSON.parse(data);
     }
     emit.transform_update(data);
