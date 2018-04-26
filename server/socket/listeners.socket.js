@@ -21,7 +21,7 @@ function connect(socket) {
         for (let slide of currentPresentation.slides) {
             if (slide.id === currentPresentation.currentSlide) {
                 for (let model of slide.models) {
-                    console.log("Emitting update for model on connect");
+                    console.log("Emitting update for model on connect. Id: ", model.id, " Transform: ", model.transform);
                     socket.emit(events.emit.update, {
                         model: model.id,
                         position: model.transform.position,
