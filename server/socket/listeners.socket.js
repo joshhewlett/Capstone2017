@@ -18,19 +18,23 @@ function connect(socket) {
     if (currentPresentation.currentSlide) {
         console.log("Emitting current slide");
         socket.emit(events.emit.slideChange, currentPresentation.currentSlide + "");
-        for (let slide of currentPresentation.slides) {
-            if (slide.id === currentPresentation.currentSlide) {
-                for (let model of slide.models) {
-                    console.log("Emitting update for model on connect. Id: ", model.id, " Transform: ", model.transform);
-                    emit.transform_update({
-                        model: model.id,
-                        position: model.transform.position,
-                        rotation: model.transform.rotation,
-                        scale: model.transform.scale
-                    });
+        setTimeout((currentPresentation) => {
+            console.log("Timer went off!");
+
+            for (let slide of currentPresentation.slides) {
+                if (slide.id === currentPresentation.currentSlide) {
+                    for (let model of slide.models) {
+                        console.log("Emitting update for model on connect. Id: ", model.id, " Transform: ", model.transform);
+                        emit.transform_update({
+                            model: model.id,
+                            position: model.transform.position,
+                            rotation: model.transform.rotation,
+                            scale: model.transform.scale
+                        });
+                    }
                 }
             }
-        }
+        }, 500);
     }
 }
 
